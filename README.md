@@ -110,29 +110,60 @@ Duas visualizações geradas no notebook:
 
 ---
 
-## 4. Estrutura do repositório
+## 4. Qualidade dos dados — diagnóstico (Atividade 5 / Encontro 5)
+
+Investigação de qualidade da base, executada no notebook `atividade5_academia.ipynb` (com todas as
+saídas visíveis) e sintetizada no `relatorio_qualidade_dados.pdf`.
+
+**Principais achados (base atual, simulada):**
+
+| Eixo | Resultado |
+|---|---|
+| Dimensões | 300 linhas × 8 colunas |
+| Dados ausentes | 0 em todas as colunas (0%) — artificial da geração sintética |
+| Duplicados | 0 linhas idênticas, 0 `aluno_id` repetido; 7 colisões de perfil+rótulo (esperadas) |
+| Inconsistências | `nivel_experiencia` sem acento vs dicionário; ordinais como texto nominal; dicionário diz idade "16–65", base vai até 51; 8% de ruído de rótulo (24 registros contradizem a regra de geração) |
+| Desbalanceamento | leve — Treino D 30,7% vs Treino B 18,0% (razão 1,7:1) |
+| Viés principal | acesso a equipamento: grupo "sem equipamento" (7,3%) tem rótulo praticamente fixo (Treino D) pela própria regra de geração — viés de amostragem + rotulagem |
+
+A tabela de diagnóstico completa (problema · onde aparece · gravidade · ação de tratamento · quando),
+as ações de tratamento justificadas e a discussão de vieses estão no relatório. O tratamento em si
+será executado no Encontro 8.
+
+**Slides da AP1:** `slides_ap1.pdf` — panorama do projeto (problema, abordagem, base, diagnóstico, vieses,
+próximos passos).
+
+---
+
+## 5. Estrutura do repositório
 
 ```
 ├── README.md
 ├── gerar_dataset.py                        # script reprodutível de geração da base
 ├── dataset_academia.csv                    # base simulada — 300 alunos, 8 colunas
-├── atividade4_academia.ipynb               # notebook de análise (executado, com saídas)
-├── grafico_analise_inicial.png             # figura exportada pelo notebook
-└── Atividade4_Esboco_ViniciusCasagrande.pdf
+├── atividade4_academia.ipynb               # notebook de análise exploratória (Atividade 4)
+├── atividade5_academia.ipynb               # notebook de diagnóstico de qualidade (Atividade 5, executado)
+├── relatorio_qualidade_dados.pdf           # relatório curto de qualidade dos dados + tabela de diagnóstico
+├── slides_ap1.pdf                          # slides da AP1
+├── grafico_analise_inicial.png             # figura da análise exploratória
+├── grafico_desbalanceamento.png            # figura do desbalanceamento das classes
+├── Atividade4_Final_ViniciusCasagrande_corrigido.pdf
+├── Atividade5_Esboco_ViniciusCasagrande.pdf
+└── Atividade5_Final_ViniciusCasagrande.pdf
 ```
 
 ---
 
-## 5. Backlog do projeto
+## 6. Backlog do projeto
 
 - [x] Definição do problema e domínio (Atividade 1)
 - [x] Contextualização da solução de IA (Atividade 2)
 - [x] Escolha e justificativa da abordagem técnica (Atividade 3)
 - [x] Base de dados simulada + dicionário de dados (Atividade 4)
-- [ ] Tratamento e limpeza de dados (Encontro 5)
-- [ ] Preparação dos dados para o modelo (Encontro 8)
-- [ ] Treinamento do modelo (Encontro 9)
-- [ ] Avaliação do modelo
+- [x] Diagnóstico de qualidade dos dados + discussão de vieses (Atividade 5 / Encontro 5)
+- [ ] Preparação e tratamento dos dados para o modelo (Encontro 8)
+- [ ] Treinamento do modelo — Árvore de Decisão (Encontro 9)
+- [ ] Avaliação do modelo (F1-macro, matriz de confusão, desempenho por subgrupo)
 - [ ] Apresentação final do projeto
 
 ---
@@ -141,5 +172,5 @@ Duas visualizações geradas no notebook:
 
 **Uso de IA nesta entrega:** Sim
 **Ferramenta:** Claude (Anthropic)
-**Utilização:** apoio na geração do script de simulação do dataset, construção do notebook de análise exploratória e estruturação da redação deste README.
-**Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo e interpretação dos resultados estatísticos são do estudante.
+**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
+**Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento e interpretação dos resultados são do estudante.
