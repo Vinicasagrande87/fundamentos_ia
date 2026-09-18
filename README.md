@@ -135,26 +135,66 @@ próximos passos).
 
 ---
 
-## 5. Estrutura do repositório
+## 5. Pipeline do projeto (Atividade 7)
+
+O pipeline completo do projeto — da coleta do perfil do aluno até a recomendação final de treino — está documentado em:
+
+- `Atividade7_Esboco_ViniciusCasagrande.pdf` — primeira versão do pipeline, tipo de aprendizado, features/label, verificação de vazamento e plano de divisão dos dados.
+- `Atividade7_Final_ViniciusCasagrande.pdf` — versão consolidada, com status de cada etapa (feito/falta), formatos de entrada e saída detalhados e verificação de vazamento concluída.
+
+**Resumo do pipeline:** coleta do perfil → preparação e limpeza dos dados → divisão treino/teste (80/20, estratificada) → treinamento da Árvore de Decisão (com validação cruzada k=5) → avaliação (F1-macro, matriz de confusão, desempenho por subgrupo) → recomendação da categoria de treino (A, B, C ou D).
+
+**Tipo de aprendizado:** supervisionado, classificação multiclasse — justificativa completa na Atividade 7 (seção 3).
+
+---
+
+## 6. Limpeza e preparação da base (Atividade 8)
+
+O tratamento da base está documentado em `Atividade8_academia.ipynb`, executado do início ao fim, com:
+
+- Recapitulação do diagnóstico de qualidade (Atividade 5).
+- 7 transformações/decisões aplicadas (remoção de `aluno_id` das features, padronização de nomenclatura, tipagem ordinal, atualização do dicionário de dados, e decisão consciente de **não** corrigir o ruído de rótulo nem o desbalanceamento nesta etapa).
+- Tabela de decisões completa (transformação · coluna · motivo · impacto · risco).
+- Verificação de vazamento de resposta concluída (sem vazamento identificado).
+
+**Arquivos:**
+- `dataset_academia.csv` — base original, **intacta**.
+- `dataset_academia_tratado.csv` — base tratada, salva e verificada por releitura.
+- `gerar_dataset.py` — script reprodutível de geração da base (seed = 1053).
+
+**Pendente para o Encontro 9:** codificação numérica das variáveis categóricas (a ser ajustada apenas no conjunto de treino, após o split) e a divisão treino/teste em si.
+
+---
+
+## 7. Estrutura do repositório
 
 ```
 ├── README.md
 ├── gerar_dataset.py                        # script reprodutível de geração da base
-├── dataset_academia.csv                    # base simulada — 300 alunos, 8 colunas
+├── dataset_academia.csv                    # base original simulada — 300 alunos, 8 colunas (intacta)
+├── dataset_academia_tratado.csv            # base tratada (Atividade 8), salva e verificada
 ├── atividade4_academia.ipynb               # notebook de análise exploratória (Atividade 4)
 ├── atividade5_academia.ipynb               # notebook de diagnóstico de qualidade (Atividade 5, executado)
+├── Atividade8_academia.ipynb               # notebook de limpeza e preparação da base (Atividade 8, executado)
 ├── relatorio_qualidade_dados.pdf           # relatório curto de qualidade dos dados + tabela de diagnóstico
 ├── slides_ap1.pdf                          # slides da AP1
 ├── grafico_analise_inicial.png             # figura da análise exploratória
 ├── grafico_desbalanceamento.png            # figura do desbalanceamento das classes
 ├── Atividade4_Final_ViniciusCasagrande_corrigido.pdf
 ├── Atividade5_Esboco_ViniciusCasagrande.pdf
-└── Atividade5_Final_ViniciusCasagrande.pdf
+├── Atividade5_Final_ViniciusCasagrande.pdf
+└── entregas/                               # arquivos de entrega individual (modelo padrão + slides)
+    ├── Atividade6_ViniciusCasagrande.docx
+    ├── Atividade7_Esboco_ViniciusCasagrande.docx
+    ├── Atividade7_Final_ViniciusCasagrande.docx
+    ├── Atividade8_Final_ViniciusCasagrande.docx
+    ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável)
+    └── roteiro_apresentacao.md              # roteiro de apoio para a apresentação da AP1
 ```
 
 ---
 
-## 6. Backlog do projeto
+## 8. Backlog do projeto
 
 - [x] Definição do problema e domínio (Atividade 1)
 - [x] Contextualização da solução de IA (Atividade 2)
