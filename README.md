@@ -130,7 +130,7 @@ A tabela de diagnóstico completa (problema · onde aparece · gravidade · aç�
 as ações de tratamento justificadas e a discussão de vieses estão no relatório. O tratamento em si
 será executado no Encontro 8.
 
-**Slides da AP1:** `slides_ap1.pdf` — panorama do projeto (problema, abordagem, base, diagnóstico, vieses,
+**Slides da AP1:** `entregas/AP1_ViniciusCasagrande.pdf` — panorama do projeto (problema, abordagem, base, diagnóstico, vieses,
 próximos passos).
 
 ---
@@ -150,7 +150,7 @@ O pipeline completo do projeto — da coleta do perfil do aluno até a recomenda
 
 ## 6. Limpeza e preparação da base (Atividade 8)
 
-O tratamento da base está documentado em `Atividade8_academia.ipynb`, executado do início ao fim, com:
+O tratamento da base está documentado em `atividade8_academia.ipynb`, executado do início ao fim, com:
 
 - Recapitulação do diagnóstico de qualidade (Atividade 5).
 - 7 transformações/decisões aplicadas (remoção de `aluno_id` das features, padronização de nomenclatura, tipagem ordinal, atualização do dicionário de dados, e decisão consciente de **não** corrigir o ruído de rótulo nem o desbalanceamento nesta etapa).
@@ -175,20 +175,21 @@ O tratamento da base está documentado em `Atividade8_academia.ipynb`, executado
 ├── dataset_academia_tratado.csv            # base tratada (Atividade 8), salva e verificada
 ├── atividade4_academia.ipynb               # notebook de análise exploratória (Atividade 4)
 ├── atividade5_academia.ipynb               # notebook de diagnóstico de qualidade (Atividade 5, executado)
-├── Atividade8_academia.ipynb               # notebook de limpeza e preparação da base (Atividade 8, executado)
+├── atividade8_academia.ipynb               # notebook de limpeza e preparação da base (Atividade 8, executado)
 ├── relatorio_qualidade_dados.pdf           # relatório curto de qualidade dos dados + tabela de diagnóstico
-├── slides_ap1.pdf                          # slides da AP1
 ├── grafico_analise_inicial.png             # figura da análise exploratória
 ├── grafico_desbalanceamento.png            # figura do desbalanceamento das classes
-├── Atividade4_Final_ViniciusCasagrande_corrigido.pdf
-├── Atividade5_Esboco_ViniciusCasagrande.pdf
-├── Atividade5_Final_ViniciusCasagrande.pdf
-└── entregas/                               # arquivos de entrega individual (modelo padrão + slides)
+└── entregas/                               # arquivos de entrega individual (modelo padrão, esboços e slides)
+    ├── Atividade4_Final_ViniciusCasagrande_corrigido.pdf
+    ├── Atividade5_Esboco_ViniciusCasagrande.docx / .pdf
+    ├── Atividade5_Final_ViniciusCasagrande.docx / .pdf
     ├── Atividade6_ViniciusCasagrande.docx
     ├── Atividade7_Esboco_ViniciusCasagrande.docx
     ├── Atividade7_Final_ViniciusCasagrande.docx
-    ├── Atividade8_Final_ViniciusCasagrande.docx
-    ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável)
+    ├── Atividade8_Final_ViniciusCasagrande.docx / .pdf
+    ├── AP1_ViniciusCasagrande.pdf           # slides da AP1 (nome exigido pelo enunciado)
+    ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável, versão mais recente)
+    ├── slides_ap1.pptx                      # slides da AP1 — versão anterior, fonte do PDF acima
     └── roteiro_apresentacao.md              # roteiro de apoio para a apresentação da AP1
 ```
 
