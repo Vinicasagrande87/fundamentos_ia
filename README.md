@@ -176,6 +176,7 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 ├── atividade4_academia.ipynb               # notebook de análise exploratória (Atividade 4)
 ├── atividade5_academia.ipynb               # notebook de diagnóstico de qualidade (Atividade 5, executado)
 ├── atividade8_academia.ipynb               # notebook de limpeza e preparação da base (Atividade 8, executado)
+├── atividade9_academia.ipynb               # notebook do primeiro modelo + avaliação (Atividade 9, entrega final)
 ├── relatorio_qualidade_dados.pdf           # relatório curto de qualidade dos dados + tabela de diagnóstico
 ├── grafico_analise_inicial.png             # figura da análise exploratória
 ├── grafico_desbalanceamento.png            # figura do desbalanceamento das classes
@@ -187,6 +188,8 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
     ├── Atividade7_Esboco_ViniciusCasagrande.docx
     ├── Atividade7_Final_ViniciusCasagrande.docx
     ├── Atividade8_Final_ViniciusCasagrande.docx / .pdf
+    ├── Atividade9_Esboco_ViniciusCasagrande.pdf
+    ├── Atividade9_Final_ViniciusCasagrande.pdf
     ├── AP1_ViniciusCasagrande.pdf           # slides da AP1 (nome exigido pelo enunciado)
     ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável, versão mais recente)
     ├── slides_ap1.pptx                      # slides da AP1 — versão anterior, fonte do PDF acima
@@ -202,16 +205,36 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Escolha e justificativa da abordagem técnica (Atividade 3)
 - [x] Base de dados simulada + dicionário de dados (Atividade 4)
 - [x] Diagnóstico de qualidade dos dados + discussão de vieses (Atividade 5 / Encontro 5)
-- [ ] Preparação e tratamento dos dados para o modelo (Encontro 8)
-- [ ] Treinamento do modelo — Árvore de Decisão (Encontro 9)
-- [ ] Avaliação do modelo (F1-macro, matriz de confusão, desempenho por subgrupo)
-- [ ] Apresentação final do projeto
+- [x] Preparação e tratamento dos dados para o modelo (Atividade 8)
+- [x] Treinamento do modelo — Árvore de Decisão (Atividade 9)
+- [x] Matriz de confusão e F1 por classe (Atividade 9 — entrega final)
+- [x] Verificação de vazamento + comparação com a regra de geração, explicando o resultado acima do esperado (Atividade 9 — entrega final)
+- [ ] Validação cruzada (k=5), conforme previsto no pipeline da Atividade 7
+- [ ] Discussão do que o resultado (0,90) significa para alunos reais, não apenas para a base sintética
+- [ ] Apresentação final do projeto (AP2)
+
+---
+
+## 9. Atividade 9 — Primeiro modelo treinado (entrega final)
+
+A base tratada foi carregada e separada em X e y, com `aluno_id` removido das features. A expectativa inicial (60%–80% de acurácia) foi registrada antes do treinamento, seguida da divisão 80/20 com `stratify=y` para manter a proporção das classes.
+
+O modelo baseline foi treinado com `DummyClassifier(strategy='most_frequent')` e obteve acurácia de 0,30. Em seguida, foi treinado um classificador `DecisionTreeClassifier(max_depth=5, random_state=42)`, que alcançou acurácia de 0,90 sobre o conjunto de teste — acima da faixa esperada.
+
+Na entrega final, esse resultado acima do esperado foi investigado em vez de apenas aceito: o notebook verifica ausência de vazamento de dados e compara as previsões do modelo com a regra de geração usada em `gerar_dataset.py` (que inclui ~8% de ruído de rótulo proposital). A conclusão é que a árvore recupera a regra de geração da base sintética, e o erro residual é compatível com o ruído injetado — ou seja, o resultado mede a capacidade do modelo de recuperar uma regra conhecida, não a qualidade de uma recomendação para um aluno real. Esse ponto é o centro do backlog da AP2.
+
+Arquivo do notebook principal desta etapa:
+- `atividade9_academia.ipynb`
+
+O notebook está organizado em 14 seções (markdown + código) e inclui: base tratada, expectativa inicial, divisão treino/teste, baseline, modelo real, previsões, comparação com o baseline, **matriz de confusão e F1 por classe**, **regras aprendidas pela árvore (`export_text`)**, **verificação de vazamento e leitura crítica do resultado**, dificuldades encontradas, o que mudou em relação ao esboço, backlog da AP2 e conclusão. Deve ser executado do início ao fim no Google Colab antes da entrega, para que as saídas fiquem visíveis e os números fiquem consistentes.
+
+**Entregas individuais:** `entregas/Atividade9_Esboco_ViniciusCasagrande.pdf` (esboço) e `entregas/Atividade9_Final_ViniciusCasagrande.pdf` (entrega final).
 
 ---
 
 ## Declaração de uso de Inteligência Artificial
 
 **Uso de IA nesta entrega:** Sim
-**Ferramenta:** Claude (Anthropic)
-**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
-**Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento e interpretação dos resultados são do estudante.
+**Ferramentas:** Claude (Anthropic) e ChatGPT
+**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração), e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
+**Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento, a definição do problema e do critério de divisão treino/teste, a justificativa do modelo escolhido na Atividade 9, e a interpretação dos resultados (incluindo a leitura crítica de que a acurácia de 0,90 reflete a recuperação da regra sintética e não o desempenho em dados reais) são do estudante.
