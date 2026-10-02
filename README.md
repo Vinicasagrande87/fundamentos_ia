@@ -177,6 +177,8 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 ├── atividade5_academia.ipynb               # notebook de diagnóstico de qualidade (Atividade 5, executado)
 ├── atividade8_academia.ipynb               # notebook de limpeza e preparação da base (Atividade 8, executado)
 ├── atividade9_academia.ipynb               # notebook do primeiro modelo + avaliação (Atividade 9, entrega final)
+├── atividade10_academia.ipynb              # notebook de avaliação do modelo (Atividade 10, esboço)
+├── matriz_confusao_atividade10.png         # figura da matriz de confusão (Atividade 10)
 ├── relatorio_qualidade_dados.pdf           # relatório curto de qualidade dos dados + tabela de diagnóstico
 ├── grafico_analise_inicial.png             # figura da análise exploratória
 ├── grafico_desbalanceamento.png            # figura do desbalanceamento das classes
@@ -189,7 +191,9 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
     ├── Atividade7_Final_ViniciusCasagrande.docx
     ├── Atividade8_Final_ViniciusCasagrande.docx / .pdf
     ├── Atividade9_Esboco_ViniciusCasagrande.pdf
-    ├── Atividade9_Final_ViniciusCasagrande.pdf
+    ├── Atividade9_Final_ViniciusCasagrande.docx / .pdf
+    ├── Atividade10_Esboco_ViniciusCasagrande.docx
+    ├── AP2_Preliminar_ViniciusCasagrande.pptx  # slides preliminares da AP2 (Atividade 10)
     ├── AP1_ViniciusCasagrande.pdf           # slides da AP1 (nome exigido pelo enunciado)
     ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável, versão mais recente)
     ├── slides_ap1.pptx                      # slides da AP1 — versão anterior, fonte do PDF acima
@@ -209,8 +213,12 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Treinamento do modelo — Árvore de Decisão (Atividade 9)
 - [x] Matriz de confusão e F1 por classe (Atividade 9 — entrega final)
 - [x] Verificação de vazamento + comparação com a regra de geração, explicando o resultado acima do esperado (Atividade 9 — entrega final)
+- [x] Métricas por classe, matriz de confusão (figura), significado dos erros no domínio e métrica principal justificada pelo custo do erro (Atividade 10)
+- [x] Teste de overfitting (treino vs. teste) e verificação adicional de resultado bom demais — duplicatas e ordem cronológica (Atividade 10)
+- [x] Slides preliminares da AP2 (Atividade 10)
 - [ ] Validação cruzada (k=5), conforme previsto no pipeline da Atividade 7
 - [ ] Discussão do que o resultado (0,90) significa para alunos reais, não apenas para a base sintética
+- [ ] Melhorar o recall de Treino D (0,78), a classe mais fraca do modelo, antes da AP2
 - [ ] Apresentação final do projeto (AP2)
 
 ---
@@ -232,9 +240,32 @@ O notebook está organizado em 14 seções (markdown + código) e inclui: base t
 
 ---
 
+## 10. Atividade 10 — Avaliação do modelo (esboço)
+
+Esta atividade aprofunda a avaliação do modelo treinado na Atividade 9 (`DecisionTreeClassifier`, `max_depth=5`), com foco em interpretar o resultado, não apenas medi-lo.
+
+**Métricas por classe (conjunto de teste):** `classification_report` — Treino A (precisão 0,79 / recall 1,00), Treino B (0,91 / 0,91), Treino C (0,94 / 0,94), Treino D (1,00 / 0,78). Acurácia geral: 0,90. A matriz de confusão (figura `matriz_confusao_atividade10.png`) mostra que o Treino D é a classe mais confundida com as demais.
+
+**Comparação com o baseline:** baseline 0,30, modelo 0,90, diferença de +0,60 — o modelo supera claramente o baseline.
+
+**Significado dos erros e métrica principal:** como o Treino D é a categoria usada para alunos sem equipamento, com restrição física ou iniciantes, um falso negativo dessa classe (recomendar um treino mais intenso do que o indicado) tem custo de segurança, enquanto um falso positivo tem apenas custo de eficiência. Por isso, a métrica principal escolhida para o projeto é o **recall de Treino D (0,7778)**, não a acurácia agregada — e é justamente o ponto mais fraco do modelo hoje.
+
+**Teste de overfitting:** acurácia de treino (0,8875) ligeiramente abaixo da de teste (0,90) — diferença de -0,0125, sem sinal de memorização do treino.
+
+**Verificação de resultado bom demais:** além do vazamento e ruído de rótulo já investigados na Atividade 9, foram checadas duplicatas de perfil (14 de 300 linhas da base, 5 delas presentes tanto no treino quanto no teste) e ordem cronológica (a base não tem variável de tempo, então a divisão aleatória estratificada é apropriada). Nenhuma das duas aponta um problema de pipeline.
+
+Arquivo do notebook principal desta etapa:
+- `atividade10_academia.ipynb` — 11 seções (markdown + código), executado do início ao fim no Google Colab, com a figura da matriz de confusão visível.
+
+**Slides preliminares da AP2:** `entregas/AP2_Preliminar_ViniciusCasagrande.pptx` — primeira versão (8 slides), a ser completada até o Encontro 11 com validação cruzada e a discussão sobre o que o resultado significa para alunos reais.
+
+**Entrega individual:** `entregas/Atividade10_Esboco_ViniciusCasagrande.docx`.
+
+---
+
 ## Declaração de uso de Inteligência Artificial
 
 **Uso de IA nesta entrega:** Sim
 **Ferramentas:** Claude (Anthropic) e ChatGPT
-**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração), e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
-**Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento, a definição do problema e do critério de divisão treino/teste, a justificativa do modelo escolhido na Atividade 9, e a interpretação dos resultados (incluindo a leitura crítica de que a acurácia de 0,90 reflete a recuperação da regra sintética e não o desempenho em dados reais) são do estudante.
+**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração) e da Atividade 10 (`classification_report`, `ConfusionMatrixDisplay`, teste de overfitting, verificação de duplicatas entre treino e teste), na montagem dos slides preliminares da AP2, e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
+**Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento, a definição do problema e do critério de divisão treino/teste, a justificativa do modelo escolhido na Atividade 9, a interpretação dos resultados (incluindo a leitura crítica de que a acurácia de 0,90 reflete a recuperação da regra sintética e não o desempenho em dados reais), a escolha e justificativa da métrica principal da Atividade 10 pelo custo do erro (recall de Treino D), a tradução dos erros para a linguagem do domínio do projeto e a leitura do teste de overfitting são do estudante.
