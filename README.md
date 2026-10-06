@@ -177,7 +177,7 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 ├── atividade5_academia.ipynb               # notebook de diagnóstico de qualidade (Atividade 5, executado)
 ├── atividade8_academia.ipynb               # notebook de limpeza e preparação da base (Atividade 8, executado)
 ├── atividade9_academia.ipynb               # notebook do primeiro modelo + avaliação (Atividade 9, entrega final)
-├── atividade10_academia.ipynb              # notebook de avaliação do modelo (Atividade 10, esboço)
+├── atividade10_academia.ipynb              # notebook de avaliação do modelo (Atividade 10, entrega final)
 ├── matriz_confusao_atividade10.png         # figura da matriz de confusão (Atividade 10)
 ├── relatorio_qualidade_dados.pdf           # relatório curto de qualidade dos dados + tabela de diagnóstico
 ├── grafico_analise_inicial.png             # figura da análise exploratória
@@ -193,7 +193,8 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
     ├── Atividade9_Esboco_ViniciusCasagrande.pdf
     ├── Atividade9_Final_ViniciusCasagrande.docx / .pdf
     ├── Atividade10_Esboco_ViniciusCasagrande.docx
-    ├── AP2_Preliminar_ViniciusCasagrande.pptx  # slides preliminares da AP2 (Atividade 10)
+    ├── Atividade10_Final_ViniciusCasagrande.docx / .pdf  # pendente de preenchimento pelo aluno
+    ├── AP2_Final_ViniciusCasagrande.pptx    # slides finais da AP2 (Atividade 10 — entrega final)
     ├── AP1_ViniciusCasagrande.pdf           # slides da AP1 (nome exigido pelo enunciado)
     ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável, versão mais recente)
     ├── slides_ap1.pptx                      # slides da AP1 — versão anterior, fonte do PDF acima
@@ -215,10 +216,11 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Verificação de vazamento + comparação com a regra de geração, explicando o resultado acima do esperado (Atividade 9 — entrega final)
 - [x] Métricas por classe, matriz de confusão (figura), significado dos erros no domínio e métrica principal justificada pelo custo do erro (Atividade 10)
 - [x] Teste de overfitting (treino vs. teste) e verificação adicional de resultado bom demais — duplicatas e ordem cronológica (Atividade 10)
-- [x] Slides preliminares da AP2 (Atividade 10)
+- [x] Slides finais da AP2 (Atividade 10 — entrega final, 11 slides)
 - [ ] Validação cruzada (k=5), conforme previsto no pipeline da Atividade 7
 - [ ] Discussão do que o resultado (0,90) significa para alunos reais, não apenas para a base sintética
 - [ ] Melhorar o recall de Treino D (0,78), a classe mais fraca do modelo, antes da AP2
+- [ ] Preencher o modelo padrão da Atividade 10 (entrega final) e exportar `Atividade10_Final_ViniciusCasagrande.pdf`
 - [ ] Apresentação final do projeto (AP2)
 
 ---
@@ -240,7 +242,7 @@ O notebook está organizado em 14 seções (markdown + código) e inclui: base t
 
 ---
 
-## 10. Atividade 10 — Avaliação do modelo (esboço)
+## 10. Atividade 10 — Avaliação do modelo (entrega final)
 
 Esta atividade aprofunda a avaliação do modelo treinado na Atividade 9 (`DecisionTreeClassifier`, `max_depth=5`), com foco em interpretar o resultado, não apenas medi-lo.
 
@@ -254,12 +256,16 @@ Esta atividade aprofunda a avaliação do modelo treinado na Atividade 9 (`Decis
 
 **Verificação de resultado bom demais:** além do vazamento e ruído de rótulo já investigados na Atividade 9, foram checadas duplicatas de perfil (14 de 300 linhas da base, 5 delas presentes tanto no treino quanto no teste) e ordem cronológica (a base não tem variável de tempo, então a divisão aleatória estratificada é apropriada). Nenhuma das duas aponta um problema de pipeline.
 
+**O que mudou em relação ao esboço:** a análise (seções 1 a 11 do notebook) já estava completa no esboço e não mudou — nenhum feedback específico de aula foi recebido antes do fechamento desta entrega. A mudança da entrega final é a consolidação dos **slides da AP2**, que eram uma versão preliminar (8 slides, placeholder) e agora são a versão final (11 slides). O notebook ganhou uma seção 12 registrando essa evolução, e o backlog foi atualizado.
+
 Arquivo do notebook principal desta etapa:
-- `atividade10_academia.ipynb` — 11 seções (markdown + código), executado do início ao fim no Google Colab, com a figura da matriz de confusão visível.
+- `atividade10_academia.ipynb` — 12 seções (markdown + código), executado do início ao fim no Google Colab, com a figura da matriz de confusão visível.
 
-**Slides preliminares da AP2:** `entregas/AP2_Preliminar_ViniciusCasagrande.pptx` — primeira versão (8 slides), a ser completada até o Encontro 11 com validação cruzada e a discussão sobre o que o resultado significa para alunos reais.
+**Slides da AP2 (entrega final):** `entregas/AP2_Final_ViniciusCasagrande.pptx` — 11 slides cobrindo problema e abordagem, base e pipeline, baseline vs. modelo, métricas por classe, matriz de confusão, significado dos erros, métrica principal, overfitting/verificação de vazamento, limitações e conclusão.
 
-**Entrega individual:** `entregas/Atividade10_Esboco_ViniciusCasagrande.docx`.
+**Pendente para o Encontro 11 (AP2):** validação cruzada (k=5), discussão sobre o que o resultado significa para alunos reais (fora da base sintética) e preparação da defesa oral do recall de Treino D como métrica principal.
+
+**Entregas individuais:** `entregas/Atividade10_Esboco_ViniciusCasagrande.docx` (esboço) e `entregas/Atividade10_Final_ViniciusCasagrande.docx` (entrega final — pendente de preenchimento pelo aluno no modelo padrão, com a Etapa marcada como "Entrega final").
 
 ---
 
@@ -267,5 +273,5 @@ Arquivo do notebook principal desta etapa:
 
 **Uso de IA nesta entrega:** Sim
 **Ferramentas:** Claude (Anthropic) e ChatGPT
-**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração) e da Atividade 10 (`classification_report`, `ConfusionMatrixDisplay`, teste de overfitting, verificação de duplicatas entre treino e teste), na montagem dos slides preliminares da AP2, e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
+**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração) e da Atividade 10 (`classification_report`, `ConfusionMatrixDisplay`, teste de overfitting, verificação de duplicatas entre treino e teste), na montagem e formatação dos slides finais da AP2 a partir do conteúdo já produzido no notebook e no README, e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
 **Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento, a definição do problema e do critério de divisão treino/teste, a justificativa do modelo escolhido na Atividade 9, a interpretação dos resultados (incluindo a leitura crítica de que a acurácia de 0,90 reflete a recuperação da regra sintética e não o desempenho em dados reais), a escolha e justificativa da métrica principal da Atividade 10 pelo custo do erro (recall de Treino D), a tradução dos erros para a linguagem do domínio do projeto e a leitura do teste de overfitting são do estudante.
