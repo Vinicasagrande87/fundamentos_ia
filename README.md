@@ -193,7 +193,7 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
     ├── Atividade9_Esboco_ViniciusCasagrande.pdf
     ├── Atividade9_Final_ViniciusCasagrande.docx / .pdf
     ├── Atividade10_Esboco_ViniciusCasagrande.docx
-    ├── Atividade10_Final_ViniciusCasagrande.docx / .pdf  # pendente de preenchimento pelo aluno
+    ├── Atividade10_Final_ViniciusCasagrande.docx / .pdf
     ├── AP2_Final_ViniciusCasagrande.pptx    # slides finais da AP2 (Atividade 10 — entrega final)
     ├── AP1_ViniciusCasagrande.pdf           # slides da AP1 (nome exigido pelo enunciado)
     ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável, versão mais recente)
@@ -221,7 +221,7 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Testar ajuste para melhorar o recall de Treino D — `class_weight='balanced'` levou o recall de 0,7778 para 0,8333, sem piorar as demais classes
 - [ ] Aplicar `class_weight='balanced'` como configuração padrão do modelo (hoje só foi testado e comparado, não substituiu o modelo original)
 - [ ] Discussão do que o resultado (0,90) significa para alunos reais, não apenas para a base sintética
-- [ ] Preencher o modelo padrão da Atividade 10 (entrega final) e exportar `Atividade10_Final_ViniciusCasagrande.pdf`
+- [x] Preencher o modelo padrão da Atividade 10 (entrega final) e exportar `Atividade10_Final_ViniciusCasagrande.pdf`
 - [ ] Apresentação final do projeto (AP2)
 
 ---
@@ -272,7 +272,7 @@ Arquivo do notebook principal desta etapa:
 
 **Pendente para o Encontro 11 (AP2):** discussão sobre o que o resultado significa para alunos reais (fora da base sintética) e preparação da defesa oral do recall de Treino D como métrica principal.
 
-**Entregas individuais:** `entregas/Atividade10_Esboco_ViniciusCasagrande.docx` (esboço) e `entregas/Atividade10_Final_ViniciusCasagrande.docx` (entrega final — pendente de preenchimento pelo aluno no modelo padrão, com a Etapa marcada como "Entrega final").
+**Entregas individuais:** `entregas/Atividade10_Esboco_ViniciusCasagrande.docx` (esboço) e `entregas/Atividade10_Final_ViniciusCasagrande.docx` / `.pdf` (entrega final, modelo padrão preenchido com a Etapa marcada como "Entrega final").
 
 ---
 
