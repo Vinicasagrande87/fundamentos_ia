@@ -256,14 +256,14 @@ Esta atividade aprofunda a avaliação do modelo treinado na Atividade 9 (`Decis
 
 **Verificação de resultado bom demais:** além do vazamento e ruído de rótulo já investigados na Atividade 9, foram checadas duplicatas de perfil (14 de 300 linhas da base, 5 delas presentes tanto no treino quanto no teste) e ordem cronológica (a base não tem variável de tempo, então a divisão aleatória estratificada é apropriada). Nenhuma das duas aponta um problema de pipeline.
 
-**O que mudou em relação ao esboço:** a análise (seções 1 a 11 do notebook) já estava completa no esboço e não mudou — nenhum feedback específico de aula foi recebido antes do fechamento desta entrega. A mudança da entrega final é a consolidação dos **slides da AP2**, que eram uma versão preliminar (8 slides, placeholder) e agora são a versão final (11 slides). O notebook ganhou uma seção 12 registrando essa evolução, e o backlog foi atualizado.
+**O que mudou em relação ao esboço:** a análise (seções 1 a 11 do notebook) já estava completa no esboço e não mudou. A mudança da entrega final é a consolidação dos **slides da AP2** (de uma versão preliminar de 8 slides para a versão final de 11), mais três investigações novas motivadas pelo feedback da professora sobre o esboço (nota 0,05/0,05): validação cruzada k=5 (seção 13), teste de `class_weight='balanced'` no recall de Treino D (seção 14) e comparação das regras aprendidas pela árvore (`export_text`) com a regra de geração da base, olhando especificamente os falsos negativos de Treino D (seção 15). A correção de nome de arquivo apontada no feedback (`AP2_Preliminar` → `AP2_Final`) já estava alinhada no repositório.
 
 Arquivo do notebook principal desta etapa:
-- `atividade10_academia.ipynb` — 12 seções (markdown + código), executado do início ao fim no Google Colab, com a figura da matriz de confusão visível.
+- `atividade10_academia.ipynb` — 15 seções (markdown + código). As seções 13-15 têm código pronto para rodar no Google Colab; os espaços de leitura ("preencher depois de rodar") ainda precisam ser preenchidos pelo aluno com os números reais antes da entrega.
 
 **Slides da AP2 (entrega final):** `entregas/AP2_Final_ViniciusCasagrande.pptx` — 11 slides cobrindo problema e abordagem, base e pipeline, baseline vs. modelo, métricas por classe, matriz de confusão, significado dos erros, métrica principal, overfitting/verificação de vazamento, limitações e conclusão.
 
-**Pendente para o Encontro 11 (AP2):** validação cruzada (k=5), discussão sobre o que o resultado significa para alunos reais (fora da base sintética) e preparação da defesa oral do recall de Treino D como métrica principal.
+**Pendente para o Encontro 11 (AP2):** executar as seções 13-15 no Colab e preencher as leituras, discussão sobre o que o resultado significa para alunos reais (fora da base sintética) e preparação da defesa oral do recall de Treino D como métrica principal.
 
 **Entregas individuais:** `entregas/Atividade10_Esboco_ViniciusCasagrande.docx` (esboço) e `entregas/Atividade10_Final_ViniciusCasagrande.docx` (entrega final — pendente de preenchimento pelo aluno no modelo padrão, com a Etapa marcada como "Entrega final").
 
