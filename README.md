@@ -217,9 +217,10 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Métricas por classe, matriz de confusão (figura), significado dos erros no domínio e métrica principal justificada pelo custo do erro (Atividade 10)
 - [x] Teste de overfitting (treino vs. teste) e verificação adicional de resultado bom demais — duplicatas e ordem cronológica (Atividade 10)
 - [x] Slides finais da AP2 (Atividade 10 — entrega final, 11 slides)
-- [ ] Validação cruzada (k=5), conforme previsto no pipeline da Atividade 7
+- [x] Validação cruzada (k=5) — média 0,8267, desvio padrão 0,0291 (abaixo da acurácia 0,90 do split único)
+- [x] Testar ajuste para melhorar o recall de Treino D — `class_weight='balanced'` levou o recall de 0,7778 para 0,8333, sem piorar as demais classes
+- [ ] Aplicar `class_weight='balanced'` como configuração padrão do modelo (hoje só foi testado e comparado, não substituiu o modelo original)
 - [ ] Discussão do que o resultado (0,90) significa para alunos reais, não apenas para a base sintética
-- [ ] Melhorar o recall de Treino D (0,78), a classe mais fraca do modelo, antes da AP2
 - [ ] Preencher o modelo padrão da Atividade 10 (entrega final) e exportar `Atividade10_Final_ViniciusCasagrande.pdf`
 - [ ] Apresentação final do projeto (AP2)
 
@@ -256,14 +257,20 @@ Esta atividade aprofunda a avaliação do modelo treinado na Atividade 9 (`Decis
 
 **Verificação de resultado bom demais:** além do vazamento e ruído de rótulo já investigados na Atividade 9, foram checadas duplicatas de perfil (14 de 300 linhas da base, 5 delas presentes tanto no treino quanto no teste) e ordem cronológica (a base não tem variável de tempo, então a divisão aleatória estratificada é apropriada). Nenhuma das duas aponta um problema de pipeline.
 
-**O que mudou em relação ao esboço:** a análise (seções 1 a 11 do notebook) já estava completa no esboço e não mudou. A mudança da entrega final é a consolidação dos **slides da AP2** (de uma versão preliminar de 8 slides para a versão final de 11), mais três investigações novas motivadas pelo feedback da professora sobre o esboço (nota 0,05/0,05): validação cruzada k=5 (seção 13), teste de `class_weight='balanced'` no recall de Treino D (seção 14) e comparação das regras aprendidas pela árvore (`export_text`) com a regra de geração da base, olhando especificamente os falsos negativos de Treino D (seção 15). A correção de nome de arquivo apontada no feedback (`AP2_Preliminar` → `AP2_Final`) já estava alinhada no repositório.
+**O que mudou em relação ao esboço:** a análise original (seções 1 a 11 do notebook) já estava completa no esboço e não mudou. A entrega final consolida os **slides da AP2** (de uma versão preliminar de 8 slides para a final de 11) e acrescenta três investigações motivadas pelo feedback da professora sobre o esboço (nota 0,05/0,05):
+
+- **Validação cruzada k=5** (seção 13): acurácia média de 0,8267 (desvio padrão 0,0291) contra os 0,90 do split único — o fold mais fraco chegou a 0,7833. Mostra que o split original foi relativamente favorável e que a expectativa realista de desempenho está mais perto de ~0,83 do que de 0,90.
+- **Teste de `class_weight='balanced'`** (seção 14): levou o recall de Treino D de 0,7778 para 0,8333 e, sem custo aparente, também elevou a acurácia geral para 0,9167 — nenhuma classe piorou. Ainda não foi adotado como configuração padrão do modelo (fica para antes da apresentação).
+- **Comparação das regras da árvore (`export_text`) com a regra de geração** (seção 15): dos 4 falsos negativos de Treino D no teste, nenhum envolve falta de equipamento (o caso mais óbvio); em pelo menos 2 casos a árvore aprendeu a usar **idade** como critério onde a regra real depende de nível de experiência ou dias disponíveis — um atalho que funciona no treino mas não generaliza, plausivelmente ligado ao ruído de rótulo (8%).
+
+A correção de nome de arquivo apontada no feedback (`AP2_Preliminar` → `AP2_Final`) já estava alinhada no repositório.
 
 Arquivo do notebook principal desta etapa:
-- `atividade10_academia.ipynb` — 15 seções (markdown + código). As seções 13-15 têm código pronto para rodar no Google Colab; os espaços de leitura ("preencher depois de rodar") ainda precisam ser preenchidos pelo aluno com os números reais antes da entrega.
+- `atividade10_academia.ipynb` — 15 seções (markdown + código), executado do início ao fim no Google Colab (incluindo as seções 13-15), com todas as saídas e a figura da matriz de confusão visíveis.
 
 **Slides da AP2 (entrega final):** `entregas/AP2_Final_ViniciusCasagrande.pptx` — 11 slides cobrindo problema e abordagem, base e pipeline, baseline vs. modelo, métricas por classe, matriz de confusão, significado dos erros, métrica principal, overfitting/verificação de vazamento, limitações e conclusão.
 
-**Pendente para o Encontro 11 (AP2):** executar as seções 13-15 no Colab e preencher as leituras, discussão sobre o que o resultado significa para alunos reais (fora da base sintética) e preparação da defesa oral do recall de Treino D como métrica principal.
+**Pendente para o Encontro 11 (AP2):** discussão sobre o que o resultado significa para alunos reais (fora da base sintética) e preparação da defesa oral do recall de Treino D como métrica principal.
 
 **Entregas individuais:** `entregas/Atividade10_Esboco_ViniciusCasagrande.docx` (esboço) e `entregas/Atividade10_Final_ViniciusCasagrande.docx` (entrega final — pendente de preenchimento pelo aluno no modelo padrão, com a Etapa marcada como "Entrega final").
 
