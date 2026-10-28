@@ -182,6 +182,9 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 ├── atividade12_academia.ipynb              # notebook do agrupamento K-means cruzado com o erro do modelo (Atividade 12, executado)
 ├── cotovelo_silhueta_atividade12.png       # figura do cotovelo e da silhueta para escolha do k (Atividade 12)
 ├── erro_por_grupo_atividade12.png          # figura da taxa de erro do modelo por grupo (Atividade 12)
+├── atividade13_academia.ipynb              # notebook rede neural (MLP) x árvore x baseline (Atividade 13, executado)
+├── curva_perda_atividade13.png             # curva de perda da rede neural (Atividade 13)
+├── comparacao_modelos_atividade13.png      # comparação lado a lado no mesmo teste (Atividade 13)
 ├── relatorio_qualidade_dados.pdf           # relatório curto de qualidade dos dados + tabela de diagnóstico
 ├── grafico_analise_inicial.png             # figura da análise exploratória
 ├── grafico_desbalanceamento.png            # figura do desbalanceamento das classes
@@ -201,6 +204,7 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
     ├── AP2_ViniciusCasagrande.pdf           # slides da AP2 exportados em PDF (nome exigido pelo enunciado)
     ├── Atividade11_ViniciusCasagrande.docx / .pdf  # revisão técnica da AP2 (entrega única)
     ├── Atividade12_ViniciusCasagrande.docx / .pdf  # exploração complementar com agrupamento (entrega única)
+    ├── Atividade13_ViniciusCasagrande.docx / .pdf  # rede neural x modelo clássico (entrega única)
     ├── Backlog_AS_ViniciusCasagrande.md     # backlog atualizado rumo ao Encontro 17 (AS)
     ├── AP1_ViniciusCasagrande.pdf           # slides da AP1 (nome exigido pelo enunciado)
     ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável, versão mais recente)
@@ -231,7 +235,9 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Comparar as regras da árvore (`export_text`) com a regra de geração e identificar a causa dos falsos negativos de Treino D (atalho espúrio por idade)
 - [x] Agrupamento K-means dos alunos cruzado com o erro do modelo — ponto cego em "Emagrecimento com limitação física" (Atividade 12)
 - [ ] Testar a feature de interação restrição × iniciante e uma regra de segurança (restrição + iniciante → Treino D) para o ponto cego encontrado na Atividade 12
-- [ ] Validar `class_weight='balanced'` com validação cruzada (não só no split único) e, se confirmado, promovê-lo a configuração padrão do modelo
+- [x] Rede neural (MLP) comparada com a árvore — decisão: não usar rede neural no projeto final (Atividade 13)
+- [x] Validar `class_weight='balanced'` com validação cruzada — 0,84 contra 0,8267, melhora confirmada (Atividade 13)
+- [ ] Promover `class_weight='balanced'` a configuração padrão do modelo e reexecutar a avaliação completa
 - [ ] Testar profundidade maior e Random Forest, comparando `feature_importances_` com a árvore atual
 - [ ] Discussão do que o resultado (0,90 no split único / ~0,83 na validação cruzada) significa para alunos reais, não apenas para a base sintética
 - [ ] Notebook final executável, README completo, relatório final, análise ética e evidências de execução para a AS (backlog completo em `entregas/Backlog_AS_ViniciusCasagrande.md`)
@@ -328,9 +334,32 @@ Revisão técnica do modelo apresentado na AP2 (1,5 de 2,5 pontos), feita a part
 
 ---
 
+## 13. Atividade 13 — Rede neural x modelo clássico
+
+**Experimento:** `MLPClassifier` com 1 camada escondida de 16 neurônios (ReLU, saída softmax, Adam), com `StandardScaler` dentro de um `Pipeline` (ajustado só no treino). Convergiu em 1479 épocas, com `max_iter=3000`. A arquitetura foi escolhida entre 6 candidatas por validação cruzada **dentro do treino**: `(16,)` e `(32,)` empataram, e ficou a menor. Baseline, árvore (`max_depth=5`) e rede foram treinados no mesmo notebook, com a mesma divisão (80/20, `random_state=42`, estratificada) e as mesmas métricas.
+
+| Modelo | Acurácia treino | Acurácia teste | Recall de Treino D (teste) | Acurácia na validação cruzada (k=5) |
+|---|---|---|---|---|
+| Baseline (most_frequent) | 0,3083 | 0,3000 | 1,0000 | 0,3067 |
+| Árvore de decisão (max_depth=5) | 0,8875 | **0,9000** | **0,7778** | 0,8267 |
+| Árvore balanced (max_depth=5) | — | — | — | **0,8400** |
+| Rede neural MLP (16, ReLU) | 0,9458 | 0,8667 | 0,7222 | 0,8300 |
+
+**Resultado:** a rede perde no split único e empata na validação cruzada. Ela tem overfitting maior (diferença treino-teste de 0,127 contra 0,075 da árvore na validação cruzada) e não corrige o ponto cego da Atividade 12. Na validação cruzada o recall de D da rede é maior (0,82 contra 0,73), mas isso equivale a 1 ou 2 alunos por fold e não se repete no split único. Hipóteses: 324 parâmetros para 240 alunos de treino, relações em forma de regras de corte (o formato natural de uma árvore), teto de ~0,92 imposto pelo ruído de rótulo e um problema de recall que está nas features, não no modelo.
+
+**Dificuldades:** com o padrão de 200 épocas apareceu um `ConvergenceWarning`, e esse resultado não convergido parecia melhor (0,90 de acurácia). Ele foi descartado por vir de um treino interrompido. Sem padronização, a rede ficou em 0,60.
+
+**Decisão para o projeto final:** **não usar rede neural.** O projeto mantém a árvore de decisão, agora com `class_weight='balanced'` como candidata principal (0,84 na validação cruzada), por causa do tamanho da base e porque a interpretabilidade é necessária para as regras de segurança do domínio.
+
+**Arquivos:** `atividade13_academia.ipynb` (executado do início ao fim), `curva_perda_atividade13.png`, `comparacao_modelos_atividade13.png`.
+
+**Entrega individual:** `entregas/Atividade13_ViniciusCasagrande.docx` / `.pdf` (modelo padrão, Etapa "Entrega final", entrega única).
+
+---
+
 ## Declaração de uso de Inteligência Artificial
 
 **Uso de IA nesta entrega:** Sim
 **Ferramentas:** Claude (Anthropic) e ChatGPT
-**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração) e da Atividade 10 (`classification_report`, `ConfusionMatrixDisplay`, teste de overfitting, verificação de duplicatas entre treino e teste, validação cruzada, teste de `class_weight='balanced'`), na montagem e formatação dos slides finais da AP2 a partir do conteúdo já produzido no notebook e no README, na estruturação do documento de revisão técnica e do backlog da AS (Atividade 11), na estruturação e execução do código do agrupamento K-means da Atividade 12 (padronização, cotovelo/silhueta, teste de estabilidade, tabela de perfis e cruzamento dos grupos com o erro do modelo), e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
+**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração) e da Atividade 10 (`classification_report`, `ConfusionMatrixDisplay`, teste de overfitting, verificação de duplicatas entre treino e teste, validação cruzada, teste de `class_weight='balanced'`), na montagem e formatação dos slides finais da AP2 a partir do conteúdo já produzido no notebook e no README, na estruturação do documento de revisão técnica e do backlog da AS (Atividade 11), na estruturação e execução do código do agrupamento K-means da Atividade 12 (padronização, cotovelo/silhueta, teste de estabilidade, tabela de perfis e cruzamento dos grupos com o erro do modelo), na estruturação e execução do experimento de rede neural da Atividade 13 (Pipeline com StandardScaler, MLPClassifier, comparação de arquiteturas e validação cruzada com os mesmos folds), e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
 **Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento, a definição do problema e do critério de divisão treino/teste, a justificativa do modelo escolhido na Atividade 9, a interpretação dos resultados (incluindo a leitura crítica de que a acurácia de 0,90 reflete a recuperação da regra sintética e não o desempenho em dados reais), a escolha e justificativa da métrica principal da Atividade 10 pelo custo do erro (recall de Treino D), a tradução dos erros para a linguagem do domínio do projeto, a leitura do teste de overfitting, a identificação dos pontos fortes e fracos do modelo na Atividade 11, a interpretação de que a instabilidade entre o split único e a validação cruzada é consequência de uma base pequena, a formulação das respostas às duas perguntas de defesa da professora (sobre quando o balanceamento de classes pioraria o resultado e sobre o efeito do tamanho da base no desvio padrão), e a definição das ações concretas de melhoria e dos prazos do backlog da AS são do estudante.

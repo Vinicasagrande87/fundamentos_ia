@@ -1,6 +1,6 @@
 # Backlog da AS — Projeto Recomendação de Treinos Personalizados em Academia
 
-Atualizado na Atividade 11 (Revisão técnica da AP2), com base nas investigações feitas na entrega final da Atividade 10 (`atividade10_academia.ipynb`, seções 13 a 15) e nas duas perguntas de defesa deixadas pela professora no feedback da Atividade 10. Atualizado de novo na Atividade 12 (agrupamento K-means cruzado com o erro do modelo, `atividade12_academia.ipynb`).
+Atualizado na Atividade 11 (Revisão técnica da AP2), com base nas investigações feitas na entrega final da Atividade 10 (`atividade10_academia.ipynb`, seções 13 a 15) e nas duas perguntas de defesa deixadas pela professora no feedback da Atividade 10. Atualizado de novo na Atividade 12 (agrupamento K-means cruzado com o erro do modelo, `atividade12_academia.ipynb`) e na Atividade 13 (rede neural x árvore, `atividade13_academia.ipynb`).
 
 ## Concluído
 
@@ -15,13 +15,14 @@ Atualizado na Atividade 11 (Revisão técnica da AP2), com base nas investigaç�
 - [x] Slides finais da AP2 consolidados (`entregas/AP2_Final_ViniciusCasagrande.pptx`)
 - [x] Revisão técnica pós-AP2 com pontos fortes, fracos, hipóteses de causa e melhorias (Atividade 11)
 - [x] Agrupamento K-means (k=4) dos alunos cruzado com o erro do modelo na validação cruzada — ponto cego localizado no grupo "Emagrecimento com limitação física" (36 alunos, 39% de erro contra 17% na média; 7 dos 9 erros reais são falsos negativos de Treino D de iniciantes com restrição) (Atividade 12)
+- [x] Validação cruzada (k=5) com `class_weight='balanced'` — acurácia 0,84 ± 0,0291 (contra 0,8267 do modelo original), recall de Treino D 0,7637 (contra 0,7310): melhora confirmada (Atividade 13)
+- [x] Rede neural (MLPClassifier, 1 camada de 16 neurônios ReLU) comparada com a árvore na mesma divisão e nos mesmos folds — empate na validação cruzada (0,83), derrota no split único (0,87 contra 0,90), overfitting maior e o ponto cego da Atividade 12 continua. **Decisão: não usar rede neural no projeto final**, manter a árvore (Atividade 13)
 
 ## A fazer — rumo ao Encontro 17 (AS)
 
 | Item | Descrição | Status | Encontro |
 |---|---|---|---|
-| Validação cruzada com `class_weight='balanced'` | Repetir a validação cruzada k=5 com o balanceamento ativado, comparar média/desvio com os 0,8267 ± 0,0291 do modelo original, para confirmar se a melhora observada no split único é real e estável | A fazer | 12 |
-| Promover `class_weight='balanced'` a padrão | Se confirmado no item anterior, substituir o modelo nas seções 1–11 do notebook e reexecutar toda a avaliação (matriz de confusão, métricas por classe, comparação com baseline) com essa configuração | A fazer | 12-13 |
+| Promover `class_weight='balanced'` a padrão | Confirmado na validação cruzada da Atividade 13 (0,84 contra 0,8267). Substituir o modelo nas seções 1–11 do notebook e reexecutar toda a avaliação (matriz de confusão, métricas por classe, comparação com baseline) com essa configuração | A fazer | 12-13 |
 | Testar profundidade maior e Random Forest | Treinar árvore com `max_depth=7` e um `RandomForestClassifier`, comparar `feature_importances_` com a árvore atual, verificar se o atalho por idade identificado na seção 15 persiste | A fazer | 13-14 |
 | Reportar validação cruzada como número de referência | Atualizar slides e relatórios para apresentar "~0,83 (validação cruzada, desvio 0,03)" como o número principal, não o 0,90 do split único isolado | A fazer | 12 |
 | Feature de interação restrição × iniciante | Criar `restricao_e_iniciante` e testá-la junto com `class_weight='balanced'` (validação cruzada), reportando o erro por grupo do K-means da Atividade 12, não só a acurácia global | A fazer | 13-14 |
@@ -29,7 +30,7 @@ Atualizado na Atividade 11 (Revisão técnica da AP2), com base nas investigaç�
 | Avaliar troca da base sintética por dados reais (ou redução do ruído proposital) | Discutir se o teto de ~8% de ruído de rótulo limita demais qualquer métrica, e se vale a pena buscar dados reais de alunos de academia | A fazer | 13-14 |
 | Notebook final executável de ponta a ponta | Com a configuração definitiva do modelo (resultado dos itens acima), executado do início ao fim sem erros, com todas as saídas e figuras visíveis | A fazer | 15 |
 | README completo | Com instruções de execução atualizadas, referenciando todos os artefatos finais do projeto | A fazer | 15 |
-| Relatório final do projeto | Documento consolidado com todo o histórico do projeto, da proposta (AP1) ao modelo final | A fazer | 16 |
+| Relatório final do projeto | Documento consolidado com todo o histórico do projeto, da proposta (AP1) ao modelo final, incluindo a comparação com a rede neural (Atividade 13) como justificativa para manter a árvore | A fazer | 16 |
 | Análise ética e crítica | Aprofundar o viés de acesso a equipamento já identificado no diagnóstico de qualidade (Atividade 5), o ponto cego em alunos com restrição física fora da hipertrofia (Atividade 12) e a limitação de usar base sintética em vez de dados reais | A fazer | 16 |
 | Evidências de execução | Notebook exportado com saídas visíveis, capturas de tela organizadas no repositório, comprovando a execução do pipeline completo | A fazer | 16 |
 | Registro final de limitações e melhorias futuras | Consolidar esta revisão técnica (Atividade 11) e os resultados dos itens acima num registro único para a AS | A fazer | 17 |
