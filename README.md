@@ -179,6 +179,9 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 ├── atividade9_academia.ipynb               # notebook do primeiro modelo + avaliação (Atividade 9, entrega final)
 ├── atividade10_academia.ipynb              # notebook de avaliação do modelo (Atividade 10, entrega final)
 ├── matriz_confusao_atividade10.png         # figura da matriz de confusão (Atividade 10)
+├── atividade12_academia.ipynb              # notebook do agrupamento K-means cruzado com o erro do modelo (Atividade 12, executado)
+├── cotovelo_silhueta_atividade12.png       # figura do cotovelo e da silhueta para escolha do k (Atividade 12)
+├── erro_por_grupo_atividade12.png          # figura da taxa de erro do modelo por grupo (Atividade 12)
 ├── relatorio_qualidade_dados.pdf           # relatório curto de qualidade dos dados + tabela de diagnóstico
 ├── grafico_analise_inicial.png             # figura da análise exploratória
 ├── grafico_desbalanceamento.png            # figura do desbalanceamento das classes
@@ -195,6 +198,10 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
     ├── Atividade10_Esboco_ViniciusCasagrande.docx
     ├── Atividade10_Final_ViniciusCasagrande.docx / .pdf
     ├── AP2_Final_ViniciusCasagrande.pptx    # slides finais da AP2 (Atividade 10 — entrega final)
+    ├── AP2_ViniciusCasagrande.pdf           # slides da AP2 exportados em PDF (nome exigido pelo enunciado)
+    ├── Atividade11_ViniciusCasagrande.docx / .pdf  # revisão técnica da AP2 (entrega única)
+    ├── Atividade12_ViniciusCasagrande.docx / .pdf  # exploração complementar com agrupamento (entrega única)
+    ├── Backlog_AS_ViniciusCasagrande.md     # backlog atualizado rumo ao Encontro 17 (AS)
     ├── AP1_ViniciusCasagrande.pdf           # slides da AP1 (nome exigido pelo enunciado)
     ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável, versão mais recente)
     ├── slides_ap1.pptx                      # slides da AP1 — versão anterior, fonte do PDF acima
@@ -219,10 +226,15 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Slides finais da AP2 (Atividade 10 — entrega final, 11 slides)
 - [x] Validação cruzada (k=5) — média 0,8267, desvio padrão 0,0291 (abaixo da acurácia 0,90 do split único)
 - [x] Testar ajuste para melhorar o recall de Treino D — `class_weight='balanced'` levou o recall de 0,7778 para 0,8333, sem piorar as demais classes
-- [ ] Aplicar `class_weight='balanced'` como configuração padrão do modelo (hoje só foi testado e comparado, não substituiu o modelo original)
-- [ ] Discussão do que o resultado (0,90) significa para alunos reais, não apenas para a base sintética
 - [x] Preencher o modelo padrão da Atividade 10 (entrega final) e exportar `Atividade10_Final_ViniciusCasagrande.pdf`
-- [ ] Apresentação final do projeto (AP2)
+- [x] Apresentação da AP2 (1,5 / 2,5 pontos) e revisão técnica pós-apresentação (Atividade 11)
+- [x] Comparar as regras da árvore (`export_text`) com a regra de geração e identificar a causa dos falsos negativos de Treino D (atalho espúrio por idade)
+- [x] Agrupamento K-means dos alunos cruzado com o erro do modelo — ponto cego em "Emagrecimento com limitação física" (Atividade 12)
+- [ ] Testar a feature de interação restrição × iniciante e uma regra de segurança (restrição + iniciante → Treino D) para o ponto cego encontrado na Atividade 12
+- [ ] Validar `class_weight='balanced'` com validação cruzada (não só no split único) e, se confirmado, promovê-lo a configuração padrão do modelo
+- [ ] Testar profundidade maior e Random Forest, comparando `feature_importances_` com a árvore atual
+- [ ] Discussão do que o resultado (0,90 no split único / ~0,83 na validação cruzada) significa para alunos reais, não apenas para a base sintética
+- [ ] Notebook final executável, README completo, relatório final, análise ética e evidências de execução para a AS (backlog completo em `entregas/Backlog_AS_ViniciusCasagrande.md`)
 
 ---
 
@@ -276,9 +288,49 @@ Arquivo do notebook principal desta etapa:
 
 ---
 
+## 11. Atividade 11 — Revisão técnica da AP2
+
+Revisão técnica do modelo apresentado na AP2 (1,5 de 2,5 pontos), feita a partir das investigações da entrega final da Atividade 10 (seções 13 a 15 do notebook) — não é uma retrospectiva da ideia do projeto, é uma análise do comportamento técnico do modelo.
+
+**O que funcionou:** o modelo superou o baseline com margem clara (0,90 vs. 0,30) sem sinal de overfitting (treino 0,8875 vs. teste 0,90); e `class_weight='balanced'` melhorou o recall de Treino D (0,7778 → 0,8333) e a acurácia geral (0,90 → 0,9167) ao mesmo tempo, sem piorar nenhuma outra classe.
+
+**O que não funcionou:** a validação cruzada (k=5) revelou que a acurácia real esperada do modelo é ~0,83 (desvio padrão 0,0291), bem abaixo do 0,90 reportado na AP2 — o split único (`random_state=42`) usado desde a Atividade 9 foi relativamente favorável; e a árvore aprendeu a usar **idade** como atalho espúrio em pelo menos 2 dos 4 falsos negativos de Treino D, numa região onde a regra real depende de nível de experiência ou dias disponíveis.
+
+**Causas levantadas:** a instabilidade do split único é consequência de uma base pequena (300 registros, 60 no teste) — com mais dados, o desvio padrão entre folds tenderia a cair na proporção de 1/√n. O atalho por idade é consistente com os 8% de ruído de rótulo da base combinados com a profundidade limitada (max_depth=5), que força a árvore a usar a variável mais conveniente para separar os exemplos de treino, nem sempre a causal. Essas duas hipóteses respondem diretamente às perguntas de defesa deixadas pela professora no feedback da Atividade 10 (quando o balanceamento de classes pioraria o resultado, e o efeito do tamanho da base no desvio padrão da validação cruzada) — respostas completas em `entregas/Atividade11_ViniciusCasagrande.docx`.
+
+**Melhorias definidas e backlog da AS:** validar `class_weight='balanced'` com validação cruzada antes de promovê-lo a configuração padrão; testar profundidade maior e Random Forest; reportar a validação cruzada (não o split único) como número de referência. Backlog completo, com status e encontro de cada item, em `entregas/Backlog_AS_ViniciusCasagrande.md`.
+
+**Entrega individual:** `entregas/Atividade11_ViniciusCasagrande.docx` (modelo padrão, Etapa "Entrega final", entrega única).
+
+---
+
+## 12. Atividade 12 — Exploração complementar com agrupamento
+
+**Caminho escolhido: A (agrupamento com K-means).** A base é tabular, tem 300 alunos e o ponto fraco do modelo já é conhecido (recall de Treino D). Por isso a pergunta não foi "que tipos de aluno existem", e sim "os erros do modelo se concentram em algum tipo de aluno?". Para ter acerto/erro em todos os 300 alunos (o split de teste só tinha 6 erros), o notebook usa `cross_val_predict` (cv=5), que reproduz a acurácia de 0,8267 da Atividade 10. A regra de geração separa os 24 erros por ruído de rótulo dos 28 erros reais do modelo.
+
+**Como foi feito:** 8 variáveis (idade, dias, nível ordinal, acesso a equipamento ordinal, tem restrição, objetivo one-hot), com `aluno_id` e `treino_recomendado` removidos, padronizadas com `StandardScaler`. Cotovelo e silhueta apontam k=3 (silhueta 0,294), mas os 3 grupos são exatamente os 3 objetivos. Foi escolhido **k=4** (silhueta 0,257), o menor k que corta um objetivo por uma variável de comportamento. Os grupos são estáveis: ARI = 1,0 em 10 sementes.
+
+| Grupo | Alunos | Erro total | Erro real |
+|---|---|---|---|
+| Foco em massa muscular | 114 | 17% | 11% |
+| Emagrecimento sem limitação | 67 | 12% | 3% |
+| **Emagrecimento com limitação física** | **36** | **39%** | **25%** |
+| Condicionamento geral | 83 | 13% | 5% |
+| Base inteira | 300 | 17% | 9% |
+
+**Achado:** o grupo "Emagrecimento com limitação física" (100% com restrição, o menor nível de experiência e o menor acesso a equipamento) concentra 9 dos 28 erros reais. Desses 9, 7 são falsos negativos de Treino D, quase todos de iniciantes com restrição e 3 ou mais dias livres, que o modelo manda para o Treino B (cardio + circuito) ou para o A. Uma verificação direta objetivo × restrição mostrou um segundo bolsão menor (Condicionamento com restrição, 32% de erro). Na hipertrofia, a restrição não aumenta o erro.
+
+**Valor e limitações:** como segmentação, o K-means acrescentou pouco (3 dos 4 grupos são só o objetivo). O valor está em ter localizado o ponto cego por trás do recall de Treino D, o que gerou dois itens novos no backlog da AS: a feature de interação restrição × iniciante e uma regra de segurança sobre a saída do modelo. As limitações são a base sintética, a escolha do k parcialmente arbitrária, as variáveis categóricas no K-means, o grupo pequeno (36 alunos) e a silhueta baixa.
+
+**Arquivos:** `atividade12_academia.ipynb` (executado do início ao fim), `cotovelo_silhueta_atividade12.png`, `erro_por_grupo_atividade12.png`.
+
+**Entrega individual:** `entregas/Atividade12_ViniciusCasagrande.docx` / `.pdf` (modelo padrão, Etapa "Entrega final", entrega única).
+
+---
+
 ## Declaração de uso de Inteligência Artificial
 
 **Uso de IA nesta entrega:** Sim
 **Ferramentas:** Claude (Anthropic) e ChatGPT
-**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração) e da Atividade 10 (`classification_report`, `ConfusionMatrixDisplay`, teste de overfitting, verificação de duplicatas entre treino e teste), na montagem e formatação dos slides finais da AP2 a partir do conteúdo já produzido no notebook e no README, e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
-**Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento, a definição do problema e do critério de divisão treino/teste, a justificativa do modelo escolhido na Atividade 9, a interpretação dos resultados (incluindo a leitura crítica de que a acurácia de 0,90 reflete a recuperação da regra sintética e não o desempenho em dados reais), a escolha e justificativa da métrica principal da Atividade 10 pelo custo do erro (recall de Treino D), a tradução dos erros para a linguagem do domínio do projeto e a leitura do teste de overfitting são do estudante.
+**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração) e da Atividade 10 (`classification_report`, `ConfusionMatrixDisplay`, teste de overfitting, verificação de duplicatas entre treino e teste, validação cruzada, teste de `class_weight='balanced'`), na montagem e formatação dos slides finais da AP2 a partir do conteúdo já produzido no notebook e no README, na estruturação do documento de revisão técnica e do backlog da AS (Atividade 11), na estruturação e execução do código do agrupamento K-means da Atividade 12 (padronização, cotovelo/silhueta, teste de estabilidade, tabela de perfis e cruzamento dos grupos com o erro do modelo), e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
+**Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento, a definição do problema e do critério de divisão treino/teste, a justificativa do modelo escolhido na Atividade 9, a interpretação dos resultados (incluindo a leitura crítica de que a acurácia de 0,90 reflete a recuperação da regra sintética e não o desempenho em dados reais), a escolha e justificativa da métrica principal da Atividade 10 pelo custo do erro (recall de Treino D), a tradução dos erros para a linguagem do domínio do projeto, a leitura do teste de overfitting, a identificação dos pontos fortes e fracos do modelo na Atividade 11, a interpretação de que a instabilidade entre o split único e a validação cruzada é consequência de uma base pequena, a formulação das respostas às duas perguntas de defesa da professora (sobre quando o balanceamento de classes pioraria o resultado e sobre o efeito do tamanho da base no desvio padrão), e a definição das ações concretas de melhoria e dos prazos do backlog da AS são do estudante.
