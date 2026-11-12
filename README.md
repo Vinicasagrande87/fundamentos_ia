@@ -28,7 +28,7 @@ Projeto desenvolvido na disciplina **Fundamentos de Inteligência Artificial —
 | Configuração | Acurácia | Recall de Treino D | Em linguagem simples |
 |---|---|---|---|
 | Baseline (sempre Treino D) | 0,31 | 1,00 | Manda todo mundo para o treino adaptado e erra 7 de cada 10 alunos |
-| Árvore balanced (modelo atual) | **0,84** ±0,03 | **0,76** | Acerta 84 de cada 100 alunos. De cada 4 que precisam do treino adaptado, 1 não o recebe |
+| Árvore balanced, com idade (modelo até a Atividade 15) | **0,84** ±0,03 | **0,76** | Acerta 84 de cada 100 alunos. De cada 4 que precisam do treino adaptado, 1 não o recebe |
 | Sem idade + regra de segurança (proposta para a AS) | 0,88 | 0,89 | Os alunos que precisavam do treino adaptado e não o receberam caem de 22 para 10, em 92 (número otimista, ver limitações) |
 
 O 0,90 do split único apresentado na AP2 foi um sorteio favorável: o mesmo modelo varia de 0,70 a 0,92 conforme a divisão treino/teste.
@@ -107,7 +107,7 @@ A declaração de uso de IA está no [final deste README](#declaração-de-uso-d
 | Variável | Descrição | Tipo | Valores possíveis | Entrada/Saída | Observações |
 |---|---|---|---|---|---|
 | `aluno_id` | Identificador único do aluno simulado | Numérica discreta | 1 a 300 | — | Apenas identificação, não é feature |
-| `idade` | Idade do aluno em anos | Numérica contínua | 16 a 65 anos | Entrada | Distribuição ~normal, média ~29 anos |
+| `idade` | Idade do aluno em anos | Numérica contínua | 16 a 51 anos | Entrada | Distribuição ~normal, média ~29 anos |
 | `objetivo` | Objetivo principal do aluno | Categórica nominal | Emagrecimento, Hipertrofia, Condicionamento | Entrada | Sem valores ausentes |
 | `nivel_experiencia` | Nível de experiência com treino | Categórica ordinal | Iniciante, Intermediário, Avançado | Entrada | Ordem implícita de progressão |
 | `dias_disponiveis_semana` | Dias por semana disponíveis para treinar | Numérica discreta | 1 a 6 dias | Entrada | Média ~3,5 dias |
@@ -276,16 +276,16 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Teste de overfitting (treino vs. teste) e verificação adicional de resultado bom demais — duplicatas e ordem cronológica (Atividade 10)
 - [x] Slides finais da AP2 (Atividade 10 — entrega final, 11 slides)
 - [x] Validação cruzada (k=5) — média 0,8267, desvio padrão 0,0291 (abaixo da acurácia 0,90 do split único)
-- [x] Testar ajuste para melhorar o recall de Treino D — `class_weight='balanced'` levou o recall de 0,7778 para 0,8333, sem piorar as demais classes
+- [x] Testar ajuste para melhorar o recall de Treino D — `class_weight='balanced'` levou o recall de 0,7778 para 0,8333, sem piorar as demais classes (split único; não se confirmou na validação cruzada repetida da Atividade 15)
 - [x] Preencher o modelo padrão da Atividade 10 (entrega final) e exportar `Atividade10_Final_ViniciusCasagrande.pdf`
 - [x] Apresentação da AP2 (1,5 / 2,5 pontos) e revisão técnica pós-apresentação (Atividade 11)
 - [x] Comparar as regras da árvore (`export_text`) com a regra de geração e identificar a causa dos falsos negativos de Treino D (atalho espúrio por idade)
 - [x] Agrupamento K-means dos alunos cruzado com o erro do modelo — ponto cego em "Emagrecimento com limitação física" (Atividade 12)
 - [ ] Testar a feature de interação restrição × iniciante para o ponto cego encontrado na Atividade 12
-- [x] Medir a regra de segurança (restrição + iniciante → Treino D): altera 8 de 300 previsões, 7 certas, e não muda o recall de A, B e C (Atividade 15)
+- [x] Medir a regra de segurança (restrição + iniciante → Treino D): no modelo com idade, altera 8 de 300 previsões, 7 certas; no modelo sem idade (proposta da AS), altera 9, todas certas, e o recall de D vai de 0,79 para 0,89. Não muda o recall de A, B e C (Atividade 15)
 - [x] Rede neural (MLP) comparada com a árvore — decisão: não usar rede neural no projeto final (Atividade 13)
-- [x] Validar `class_weight='balanced'` com validação cruzada — 0,84 contra 0,8267, melhora confirmada (Atividade 13)
-- [ ] Promover `class_weight='balanced'` a configuração padrão do modelo e reexecutar a avaliação completa
+- [x] Validar `class_weight='balanced'` com validação cruzada — 0,84 contra 0,8267 na acurácia (Atividade 13). Revisto na Atividade 15: no recall de D, a melhora não se confirma
+- [ ] Promover o modelo da AS (sem `idade` + regra de segurança como encaminhamento ao professor) a configuração padrão e reexecutar a avaliação completa (substitui o item "promover o balanced", que a Atividade 15 não confirmou no recall de D)
 - [ ] Testar profundidade maior e Random Forest, comparando `feature_importances_` com a árvore atual
 - [ ] Discussão do que o resultado (0,90 no split único / ~0,83 na validação cruzada) significa para alunos reais, não apenas para a base sintética
 - [x] Análise técnica de uma aplicação real de IA do domínio (Fitbod) e conexão com o projeto (Atividade 14)
@@ -333,7 +333,7 @@ Esta atividade aprofunda a avaliação do modelo treinado na Atividade 9 (`Decis
 **O que mudou em relação ao esboço:** a análise original (seções 1 a 11 do notebook) já estava completa no esboço e não mudou. A entrega final consolida os **slides da AP2** (de uma versão preliminar de 8 slides para a final de 11) e acrescenta três investigações motivadas pelo feedback da professora sobre o esboço (nota 0,05/0,05):
 
 - **Validação cruzada k=5** (seção 13): acurácia média de 0,8267 (desvio padrão 0,0291) contra os 0,90 do split único — o fold mais fraco chegou a 0,7833. Mostra que o split original foi relativamente favorável e que a expectativa realista de desempenho está mais perto de ~0,83 do que de 0,90.
-- **Teste de `class_weight='balanced'`** (seção 14): levou o recall de Treino D de 0,7778 para 0,8333 e, sem custo aparente, também elevou a acurácia geral para 0,9167 — nenhuma classe piorou. Ainda não foi adotado como configuração padrão do modelo (fica para antes da apresentação).
+- **Teste de `class_weight='balanced'`** (seção 14): levou o recall de Treino D de 0,7778 para 0,8333 e, sem custo aparente, também elevou a acurácia geral para 0,9167 — nenhuma classe piorou. Ainda não foi adotado como configuração padrão do modelo (fica para antes da apresentação). *(Revisto na Atividade 15: na validação cruzada repetida com comparação pareada, o balanced não melhora o recall de Treino D — ganha em 8 e perde em 10 de 50 folds. O ganho de 0,7778 para 0,8333 foi de 1 aluno num único split.)*
 - **Comparação das regras da árvore (`export_text`) com a regra de geração** (seção 15): dos 4 falsos negativos de Treino D no teste, nenhum envolve falta de equipamento (o caso mais óbvio); em pelo menos 2 casos a árvore aprendeu a usar **idade** como critério onde a regra real depende de nível de experiência ou dias disponíveis — um atalho que funciona no treino mas não generaliza, plausivelmente ligado ao ruído de rótulo (8%).
 
 A correção de nome de arquivo apontada no feedback (`AP2_Preliminar` → `AP2_Final`) já estava alinhada no repositório.
@@ -353,7 +353,7 @@ Arquivo do notebook principal desta etapa:
 
 Revisão técnica do modelo apresentado na AP2 (1,5 de 2,5 pontos), feita a partir das investigações da entrega final da Atividade 10 (seções 13 a 15 do notebook) — não é uma retrospectiva da ideia do projeto, é uma análise do comportamento técnico do modelo.
 
-**O que funcionou:** o modelo superou o baseline com margem clara (0,90 vs. 0,30) sem sinal de overfitting (treino 0,8875 vs. teste 0,90); e `class_weight='balanced'` melhorou o recall de Treino D (0,7778 → 0,8333) e a acurácia geral (0,90 → 0,9167) ao mesmo tempo, sem piorar nenhuma outra classe.
+**O que funcionou:** o modelo superou o baseline com margem clara (0,90 vs. 0,30) sem sinal de overfitting (treino 0,8875 vs. teste 0,90); e `class_weight='balanced'` melhorou o recall de Treino D (0,7778 → 0,8333) e a acurácia geral (0,90 → 0,9167) ao mesmo tempo, sem piorar nenhuma outra classe. *(Revisto na Atividade 15: na validação cruzada repetida com comparação pareada, o balanced não melhora o recall de Treino D — ganha em 8 e perde em 10 de 50 folds. O ganho de 0,7778 para 0,8333 foi de 1 aluno num único split.)*
 
 **O que não funcionou:** a validação cruzada (k=5) revelou que a acurácia real esperada do modelo é ~0,83 (desvio padrão 0,0291), bem abaixo do 0,90 reportado na AP2 — o split único (`random_state=42`) usado desde a Atividade 9 foi relativamente favorável; e a árvore aprendeu a usar **idade** como atalho espúrio em pelo menos 2 dos 4 falsos negativos de Treino D, numa região onde a regra real depende de nível de experiência ou dias disponíveis.
 
@@ -404,7 +404,7 @@ Revisão técnica do modelo apresentado na AP2 (1,5 de 2,5 pontos), feita a part
 
 **Dificuldades:** com o padrão de 200 épocas apareceu um `ConvergenceWarning`, e esse resultado não convergido parecia melhor (0,90 de acurácia). Ele foi descartado por vir de um treino interrompido. Sem padronização, a rede ficou em 0,60.
 
-**Decisão para o projeto final:** **não usar rede neural.** O projeto mantém a árvore de decisão, agora com `class_weight='balanced'` como candidata principal (0,84 na validação cruzada), por causa do tamanho da base e porque a interpretabilidade é necessária para as regras de segurança do domínio.
+**Decisão para o projeto final:** **não usar rede neural.** O projeto mantém a árvore de decisão, agora com `class_weight='balanced'` como candidata principal (0,84 na validação cruzada), por causa do tamanho da base e porque a interpretabilidade é necessária para as regras de segurança do domínio. *(Revisto na Atividade 15: o balanced não melhora o recall de D, e o modelo proposto para a AS passa a ser a árvore sem `idade` com a regra de segurança.)*
 
 **Arquivos:** `atividade13_academia.ipynb` (executado do início ao fim), `curva_perda_atividade13.png`, `comparacao_modelos_atividade13.png`.
 
@@ -442,7 +442,7 @@ O notebook responde com números as perguntas de defesa deixadas nos feedbacks d
 | O ganho de recall de D da rede neural é real? | +0,05, ganha em 30 de 50 folds. Real, mas pequeno (~1 aluno por fold) e ruidoso (desvio da diferença 0,10) |
 | Por que a restrição não piora o erro na hipertrofia? | Na regra de geração, a restrição muda o treino inteiro (A → C/D), uma fronteira fácil. O erro da hipertrofia sem restrição está todo nos 7 alunos da exceção "iniciante com ≤2 dias", e os 7 são errados |
 | Erros espalhados contra o ponto cego | O ponto cego tem 18 alunos, 22% com rótulo ruidoso, colados a 40 vizinhos de Treino B. É um erro de **evidência**, que capacidade de modelo não resolve |
-| Custo da regra de segurança | Altera 8 de 300 previsões (7 eram D, 1 rótulo ruidoso). Recall de D 0,76 → 0,84, recall de A/B/C inalterado. É otimista porque a regra copia a regra de geração |
+| Custo da regra de segurança | No modelo com idade: altera 8 de 300 previsões (7 eram D, 1 rótulo ruidoso), recall de D 0,76 → 0,84. No modelo sem idade (proposta da AS): altera 9 (todas eram D), recall de D 0,79 → 0,89. Recall de A/B/C inalterado nos dois. É otimista porque a regra copia a regra de geração |
 | Balancear muda o uso da idade? | Não: a idade continua em 6 nós. Sem a idade, o modelo fica igual ou melhor e a diferença entre faixas etárias diminui, então ela sai do modelo da AS |
 
 **Risco:** Médio (saúde, mas revisável por um professor). Vira Alto se o sistema for usado sem revisão humana. O roteiro da AS, com tempo por tópico, está na seção 6 do relatório.
