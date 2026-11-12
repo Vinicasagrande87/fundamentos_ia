@@ -1,0 +1,7 @@
+# Versoes usadas na execucao local do notebook da Atividade 15 (Python 3.12).
+# Os notebooks das Atividades 4 a 14 foram executados no Google Colab (versoes do Colab da epoca).
+scikit-learn==1.9.1
+pandas==3.1.1
+numpy==2.5.4
+matplotlib==3.11.2
+jupyter

@@ -17,8 +17,11 @@ Atualizado na Atividade 11 (Revisão técnica da AP2), com base nas investigaç�
 - [x] Agrupamento K-means (k=4) dos alunos cruzado com o erro do modelo na validação cruzada — ponto cego localizado no grupo "Emagrecimento com limitação física" (36 alunos, 39% de erro contra 17% na média; 7 dos 9 erros reais são falsos negativos de Treino D de iniciantes com restrição) (Atividade 12)
 - [x] Validação cruzada (k=5) com `class_weight='balanced'` — acurácia 0,84 ± 0,0291 (contra 0,8267 do modelo original), recall de Treino D 0,7637 (contra 0,7310): melhora confirmada (Atividade 13)
 - [x] Rede neural (MLPClassifier, 1 camada de 16 neurônios ReLU) comparada com a árvore na mesma divisão e nos mesmos folds — empate na validação cruzada (0,83), derrota no split único (0,87 contra 0,90), overfitting maior e o ponto cego da Atividade 12 continua. **Decisão: não usar rede neural no projeto final**, manter a árvore (Atividade 13)
+- [x] **Atividade 15** (`atividade15_academia.ipynb`): validação cruzada repetida (10×5) com comparação pareada. O balanced ganha na acurácia em 22, empata em 22 e perde em 6 de 50 folds, mas **não melhora o recall de D**. O ganho de recall de D da rede é de +0,05 (ganha em 30 de 50 folds, pequeno e ruidoso). A regra de segurança altera 8 previsões, 7 certas, sem custo em A, B e C. A hipertrofia tem todo o seu erro real nos 7 alunos da exceção "iniciante com ≤2 dias". A idade é um atalho espúrio, e removê-la melhora o modelo. README reestruturado e relatório crítico final.
 
 ## A fazer — rumo ao Encontro 17 (AS)
+
+> Atualização da Atividade 15: os itens "Reportar validação cruzada como número de referência", "Regra de segurança" (medição) e "README completo" foram feitos. Itens novos: **remover `idade` das features** e **aplicar a regra de segurança como encaminhamento ao professor** no modelo final, reexecutando a avaliação completa (Encontro 16).
 
 | Item | Descrição | Status | Encontro |
 |---|---|---|---|

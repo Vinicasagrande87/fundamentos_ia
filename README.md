@@ -1,6 +1,50 @@
 # Projeto: Recomendação de Treinos Personalizados em Academia
 
+**Em uma frase:** uma árvore de decisão que, a partir de 6 dados do perfil de um aluno de academia, recomenda uma de 4 categorias de treino. O projeto foi treinado e avaliado **apenas em uma base sintética** de 300 alunos.
+
 Projeto desenvolvido na disciplina **Fundamentos de Inteligência Artificial — ADS/ULBRA**, construído de forma incremental ao longo do semestre.
+
+> **Relatório crítico final (Atividade 15):** [`entregas/Atividade15_ViniciusCasagrande.md`](entregas/Atividade15_ViniciusCasagrande.md), com resultados, limitações, auditoria de viés, riscos, melhorias e o roteiro da AS. As evidências numéricas estão em [`atividade15_academia.ipynb`](atividade15_academia.ipynb).
+
+## Visão geral (para quem nunca viu o projeto)
+
+**Problema e público.** Montar um treino adequado exige cruzar objetivo, experiência, disponibilidade, restrições físicas e equipamento. O sistema sugere a categoria de treino para apoiar **professores de educação física**. Ele não substitui a avaliação de um profissional.
+
+| Saída | Significado |
+|---|---|
+| Treino A | Musculação / hipertrofia |
+| Treino B | Cardio + circuito |
+| Treino C | Funcional |
+| Treino D | Peso corporal adaptado: o treino "seguro", para quem não tem equipamento, tem restrição física e é iniciante, ou tem poucos dias |
+
+**Dados.** O arquivo `dataset_academia.csv` tem 300 alunos **sintéticos**, gerados por `gerar_dataset.py` (seed 1053). Os rótulos vêm de uma regra escrita pelo autor, com 8% de ruído proposital. A base tratada está em `dataset_academia_tratado.csv`. Não há nenhum dado pessoal real. Licença: dataset de autoria própria, livre para uso acadêmico. O dicionário de variáveis está na [seção 3](#3-base-de-dados).
+
+**Como executar.**
+- **Google Colab (recomendado):** abra qualquer `atividadeN_academia.ipynb` no Colab e execute tudo (*Ambiente de execução → Executar tudo*). A primeira célula clona este repositório se os dados não estiverem presentes. O notebook final é o `atividade15_academia.ipynb`.
+- **Local:** `pip install -r requirements.txt` e depois `jupyter nbconvert --to notebook --execute atividade15_academia.ipynb` (ou abra no Jupyter). Para regerar a base: `python gerar_dataset.py 1053`.
+
+**Resultados (validação cruzada k=5, 300 alunos; métrica principal: recall de Treino D).**
+
+| Configuração | Acurácia | Recall de Treino D | Em linguagem simples |
+|---|---|---|---|
+| Baseline (sempre Treino D) | 0,31 | 1,00 | Manda todo mundo para o treino adaptado e erra 7 de cada 10 alunos |
+| Árvore balanced (modelo atual) | **0,84** ±0,03 | **0,76** | Acerta 84 de cada 100 alunos. De cada 4 que precisam do treino adaptado, 1 não o recebe |
+| Sem idade + regra de segurança (proposta para a AS) | 0,88 | 0,89 | Os alunos que precisavam do treino adaptado e não o receberam caem de 22 para 10, em 92 (número otimista, ver limitações) |
+
+O 0,90 do split único apresentado na AP2 foi um sorteio favorável: o mesmo modelo varia de 0,70 a 0,92 conforme a divisão treino/teste.
+
+**Limitações conhecidas.**
+1. **A base é sintética.** O modelo recupera a regra que o autor escreveu e nunca foi testado com alunos reais. O máximo possível é ~0,92, por causa do ruído.
+2. **Os resultados são instáveis:** ±3 pontos entre folds, e até 1 aluno de diferença entre versões do scikit-learn.
+3. **O modelo erra mais onde a pessoa é mais vulnerável:** iniciantes com restrição física (sobretudo lombar) e iniciantes de hipertrofia com até 2 dias, porque há poucos exemplos dessas combinações.
+4. **A idade funciona como atalho espúrio:** os alunos de 16-24 e de 35+ anos têm recall de D ~0,67, contra 0,88 dos de 25-34. Por isso a idade sai do modelo final.
+5. **Faltam variáveis essenciais:** grau da restrição, liberação médica, histórico de lesões. **Não use o sistema sem revisão de um professor nem para pessoas fora do perfil da base:** acima de 51 anos, gestantes, cardiopatas.
+
+A declaração de uso de IA está no [final deste README](#declaração-de-uso-de-inteligência-artificial).
+
+---
+
+# Histórico do projeto por atividade
 
 ---
 
@@ -13,8 +57,6 @@ Projeto desenvolvido na disciplina **Fundamentos de Inteligência Artificial —
 **Público / contexto de aplicação:** alunos de academia e profissionais de educação física que precisam montar ou sugerir treinos de forma mais rápida e personalizada.
 
 **Justificativa (por que IA):** montar um treino adequado depende de cruzar várias variáveis do aluno ao mesmo tempo (objetivo, experiência, disponibilidade, limitações físicas), o que é trabalhoso de fazer manualmente para um grande número de alunos. Um modelo de IA pode aprender esse padrão a partir de exemplos e sugerir a recomendação de forma consistente e escalável.
-
-> *(Ajuste este bloco se o texto final da Atividade 1 tiver alguma redação diferente da que você entregou.)*
 
 ---
 
@@ -55,7 +97,7 @@ Projeto desenvolvido na disciplina **Fundamentos de Inteligência Artificial —
 **Registros:** 300 alunos simulados
 **Colunas:** `aluno_id`, `idade`, `objetivo`, `nivel_experiencia`, `dias_disponiveis_semana`, `restricao_fisica`, `equipamento_disponivel`, `treino_recomendado`
 
-**Origem:** dados sintéticos, gerados em Python (pandas + numpy) a partir dos critérios definidos na Atividade 4 — distribuições estatísticas plausíveis para cada atributo e regras de associação entre o perfil do aluno e o treino recomendado, com 8% de ruído aleatório para simular exceções. A geração é reprodutível pelo script `gerar_dataset.py` (seed fixa = 1053). Uso livre para fins acadêmicos (dataset próprio, sem restrição de licença). Será substituída por dados reais nos Encontros 5 e 8, quando o tratamento e a limpeza forem trabalhados.
+**Origem:** dados sintéticos, gerados em Python (pandas + numpy) a partir dos critérios definidos na Atividade 4 — distribuições estatísticas plausíveis para cada atributo e regras de associação entre o perfil do aluno e o treino recomendado, com 8% de ruído aleatório para simular exceções. A geração é reprodutível pelo script `gerar_dataset.py` (seed fixa = 1053). Uso livre para fins acadêmicos (dataset próprio, sem restrição de licença). O plano inicial era substituí-la por dados reais nos Encontros 5 e 8. Isso não foi feito, e a base continua 100% sintética até a entrega final (ver limitações na Atividade 15).
 
 **Script gerador:** `gerar_dataset.py` (parâmetros das distribuições, regras de associação e seed)
 **Notebook de análise:** `atividade4_academia.ipynb` (executado, com saídas e gráficos visíveis)
@@ -185,6 +227,9 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 ├── atividade13_academia.ipynb              # notebook rede neural (MLP) x árvore x baseline (Atividade 13, executado)
 ├── curva_perda_atividade13.png             # curva de perda da rede neural (Atividade 13)
 ├── comparacao_modelos_atividade13.png      # comparação lado a lado no mesmo teste (Atividade 13)
+├── atividade15_academia.ipynb              # evidências do relatório crítico: comparações pareadas, regra de segurança, auditoria de viés (Atividade 15, executado)
+├── recall_D_subgrupo_atividade15.png       # recall de Treino D por subgrupo (Atividade 15)
+├── requirements.txt                        # versões usadas na execução local da Atividade 15
 ├── relatorio_qualidade_dados.pdf           # relatório curto de qualidade dos dados + tabela de diagnóstico
 ├── grafico_analise_inicial.png             # figura da análise exploratória
 ├── grafico_desbalanceamento.png            # figura do desbalanceamento das classes
@@ -205,6 +250,8 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
     ├── Atividade11_ViniciusCasagrande.docx / .pdf  # revisão técnica da AP2 (entrega única)
     ├── Atividade12_ViniciusCasagrande.docx / .pdf  # exploração complementar com agrupamento (entrega única)
     ├── Atividade13_ViniciusCasagrande.docx / .pdf  # rede neural x modelo clássico (entrega única)
+    ├── Atividade14_ViniciusCasagrande.docx / .pdf  # análise técnica do Fitbod (entrega única)
+    ├── Atividade15_ViniciusCasagrande.md / .docx / .pdf  # relatório crítico final + roteiro da AS (entrega única)
     ├── Backlog_AS_ViniciusCasagrande.md     # backlog atualizado rumo ao Encontro 17 (AS)
     ├── AP1_ViniciusCasagrande.pdf           # slides da AP1 (nome exigido pelo enunciado)
     ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável, versão mais recente)
@@ -234,17 +281,21 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Apresentação da AP2 (1,5 / 2,5 pontos) e revisão técnica pós-apresentação (Atividade 11)
 - [x] Comparar as regras da árvore (`export_text`) com a regra de geração e identificar a causa dos falsos negativos de Treino D (atalho espúrio por idade)
 - [x] Agrupamento K-means dos alunos cruzado com o erro do modelo — ponto cego em "Emagrecimento com limitação física" (Atividade 12)
-- [ ] Testar a feature de interação restrição × iniciante e uma regra de segurança (restrição + iniciante → Treino D) para o ponto cego encontrado na Atividade 12
+- [ ] Testar a feature de interação restrição × iniciante para o ponto cego encontrado na Atividade 12
+- [x] Medir a regra de segurança (restrição + iniciante → Treino D): altera 8 de 300 previsões, 7 certas, e não muda o recall de A, B e C (Atividade 15)
 - [x] Rede neural (MLP) comparada com a árvore — decisão: não usar rede neural no projeto final (Atividade 13)
 - [x] Validar `class_weight='balanced'` com validação cruzada — 0,84 contra 0,8267, melhora confirmada (Atividade 13)
 - [ ] Promover `class_weight='balanced'` a configuração padrão do modelo e reexecutar a avaliação completa
 - [ ] Testar profundidade maior e Random Forest, comparando `feature_importances_` com a árvore atual
 - [ ] Discussão do que o resultado (0,90 no split único / ~0,83 na validação cruzada) significa para alunos reais, não apenas para a base sintética
 - [x] Análise técnica de uma aplicação real de IA do domínio (Fitbod) e conexão com o projeto (Atividade 14)
-- [ ] Medir, para o ganho de recall de D da rede neural (0,82 vs. 0,73 na validação cruzada), se a diferença é estatisticamente real ou cabe dentro do ruído entre folds (pergunta de defesa da Atividade 13)
-- [ ] Investigar por que a restrição física não piora o erro no objetivo Hipertrofia (15% vs. 18%) — se é ponto cego do modelo ou da regra de geração (pergunta de defesa da Atividade 12)
-- [ ] Medir, antes de adotar, quantos alunos a regra de segurança (restrição + iniciante → Treino D) moveria e o custo nas outras 3 classes (pergunta de defesa da Atividade 12)
-- [ ] Notebook final executável, README completo, relatório final, análise ética e evidências de execução para a AS (backlog completo em `entregas/Backlog_AS_ViniciusCasagrande.md`)
+- [x] Medir se o ganho de recall de D da rede neural é real: +0,05, a rede ganha em 30 de 50 folds pareados e perde em 13. É real, mas pequeno e ruidoso, e a decisão de manter a árvore continua (Atividade 15)
+- [x] Investigar por que a restrição física não piora o erro na hipertrofia: na regra de geração, a restrição muda o treino inteiro (A → C/D), e o erro da hipertrofia sem restrição está todo nos 7 alunos da exceção "iniciante com ≤2 dias" (Atividade 15)
+- [x] Medir se 0,84 (balanced) contra 0,8267 é uma diferença real: na acurácia, ganha em 22, empata em 22 e perde em 6 de 50 folds. No recall de D, não melhora (Atividade 15)
+- [x] Auditoria de viés por subgrupo e verificação de proxy: a idade é um atalho espúrio, e removê-la melhora o modelo e reduz a diferença entre faixas etárias (Atividade 15)
+- [x] README reestruturado com a estrutura mínima e relatório crítico final (Atividade 15)
+- [ ] Remover a idade e aplicar a regra de segurança no modelo final da AS, reexecutando a avaliação completa
+- [ ] Slides finais e evidências de execução para a AS (backlog completo em `entregas/Backlog_AS_ViniciusCasagrande.md`)
 
 ---
 
@@ -379,9 +430,28 @@ Análise do **Fitbod** (fitbod.me), app de treinos personalizados já citado com
 
 ---
 
+## 15. Atividade 15 — Relatório crítico e estrutura da AS
+
+Relatório completo: [`entregas/Atividade15_ViniciusCasagrande.md`](entregas/Atividade15_ViniciusCasagrande.md) (também em `.docx` / `.pdf` no Modelo Padrão). Evidências: `atividade15_academia.ipynb`, executado do início ao fim. Figura: `recall_D_subgrupo_atividade15.png`.
+
+O notebook responde com números as perguntas de defesa deixadas nos feedbacks das Atividades 11 a 13:
+
+| Pergunta | Resposta medida |
+|---|---|
+| 0,84 contra 0,8267 é uma diferença real? | Na acurácia, ganho pequeno (+0,009) em 22 de 50 folds pareados, 22 empates e 6 derrotas. **No recall de D, o balanced não melhora** (ganha em 8, perde em 10) |
+| O ganho de recall de D da rede neural é real? | +0,05, ganha em 30 de 50 folds. Real, mas pequeno (~1 aluno por fold) e ruidoso (desvio da diferença 0,10) |
+| Por que a restrição não piora o erro na hipertrofia? | Na regra de geração, a restrição muda o treino inteiro (A → C/D), uma fronteira fácil. O erro da hipertrofia sem restrição está todo nos 7 alunos da exceção "iniciante com ≤2 dias", e os 7 são errados |
+| Erros espalhados contra o ponto cego | O ponto cego tem 18 alunos, 22% com rótulo ruidoso, colados a 40 vizinhos de Treino B. É um erro de **evidência**, que capacidade de modelo não resolve |
+| Custo da regra de segurança | Altera 8 de 300 previsões (7 eram D, 1 rótulo ruidoso). Recall de D 0,76 → 0,84, recall de A/B/C inalterado. É otimista porque a regra copia a regra de geração |
+| Balancear muda o uso da idade? | Não: a idade continua em 6 nós. Sem a idade, o modelo fica igual ou melhor e a diferença entre faixas etárias diminui, então ela sai do modelo da AS |
+
+**Risco:** Médio (saúde, mas revisável por um professor). Vira Alto se o sistema for usado sem revisão humana. O roteiro da AS, com tempo por tópico, está na seção 6 do relatório.
+
+---
+
 ## Declaração de uso de Inteligência Artificial
 
 **Uso de IA nesta entrega:** Sim
 **Ferramentas:** Claude (Anthropic) e ChatGPT
-**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração) e da Atividade 10 (`classification_report`, `ConfusionMatrixDisplay`, teste de overfitting, verificação de duplicatas entre treino e teste, validação cruzada, teste de `class_weight='balanced'`), na montagem e formatação dos slides finais da AP2 a partir do conteúdo já produzido no notebook e no README, na estruturação do documento de revisão técnica e do backlog da AS (Atividade 11), na estruturação e execução do código do agrupamento K-means da Atividade 12 (padronização, cotovelo/silhueta, teste de estabilidade, tabela de perfis e cruzamento dos grupos com o erro do modelo), na estruturação e execução do experimento de rede neural da Atividade 13 (Pipeline com StandardScaler, MLPClassifier, comparação de arquiteturas e validação cruzada com os mesmos folds), na busca e síntese de fontes públicas sobre o funcionamento do Fitbod para a Atividade 14, e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
-**Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento, a definição do problema e do critério de divisão treino/teste, a justificativa do modelo escolhido na Atividade 9, a interpretação dos resultados (incluindo a leitura crítica de que a acurácia de 0,90 reflete a recuperação da regra sintética e não o desempenho em dados reais), a escolha e justificativa da métrica principal da Atividade 10 pelo custo do erro (recall de Treino D), a tradução dos erros para a linguagem do domínio do projeto, a leitura do teste de overfitting, a identificação dos pontos fortes e fracos do modelo na Atividade 11, a interpretação de que a instabilidade entre o split único e a validação cruzada é consequência de uma base pequena, a formulação das respostas às duas perguntas de defesa da professora (sobre quando o balanceamento de classes pioraria o resultado e sobre o efeito do tamanho da base no desvio padrão), a definição das ações concretas de melhoria e dos prazos do backlog da AS, a escolha do Fitbod como aplicação a analisar na Atividade 14 e a leitura crítica de que o sistema é provavelmente híbrido (regras auditáveis + ajuste estatístico agregado), e a conexão concreta entre o Fitbod e o próprio projeto (regra de equipamento como camada explícita, compromisso de manter a explicabilidade) são do estudante.
+**Utilização:** apoio na geração do script de simulação do dataset, na construção e execução dos notebooks de análise exploratória e de diagnóstico de qualidade (código pandas para contagens de ausentes, duplicados, valores únicos e proporção de classes), na reprodução da regra de geração para quantificar o ruído de rótulo, na estruturação do código de treino/avaliação do modelo da Atividade 9 (matriz de confusão, F1 por classe, `export_text` e comparação das previsões com a regra de geração) e da Atividade 10 (`classification_report`, `ConfusionMatrixDisplay`, teste de overfitting, verificação de duplicatas entre treino e teste, validação cruzada, teste de `class_weight='balanced'`), na montagem e formatação dos slides finais da AP2 a partir do conteúdo já produzido no notebook e no README, na estruturação do documento de revisão técnica e do backlog da AS (Atividade 11), na estruturação e execução do código do agrupamento K-means da Atividade 12 (padronização, cotovelo/silhueta, teste de estabilidade, tabela de perfis e cruzamento dos grupos com o erro do modelo), na estruturação e execução do experimento de rede neural da Atividade 13 (Pipeline com StandardScaler, MLPClassifier, comparação de arquiteturas e validação cruzada com os mesmos folds), na busca e síntese de fontes públicas sobre o funcionamento do Fitbod para a Atividade 14, na escrita e execução do notebook da Atividade 15 (validação cruzada repetida com comparação pareada, medição da regra de segurança, métricas por subgrupo, teste de remoção da idade) e na estruturação e redação do relatório crítico e da reestruturação deste README, e na redação e formatação deste README, do relatório de qualidade e dos slides da AP1.
+**Produção própria:** as decisões sobre variáveis do perfil do aluno, critério de geração dos dados simulados, escolha da variável-alvo, classificação de gravidade dos problemas de qualidade, escolha entre alternativas de tratamento, identificação e análise do viés de acesso a equipamento, a definição do problema e do critério de divisão treino/teste, a justificativa do modelo escolhido na Atividade 9, a interpretação dos resultados (incluindo a leitura crítica de que a acurácia de 0,90 reflete a recuperação da regra sintética e não o desempenho em dados reais), a escolha e justificativa da métrica principal da Atividade 10 pelo custo do erro (recall de Treino D), a tradução dos erros para a linguagem do domínio do projeto, a leitura do teste de overfitting, a identificação dos pontos fortes e fracos do modelo na Atividade 11, a interpretação de que a instabilidade entre o split único e a validação cruzada é consequência de uma base pequena, a formulação das respostas às duas perguntas de defesa da professora (sobre quando o balanceamento de classes pioraria o resultado e sobre o efeito do tamanho da base no desvio padrão), a definição das ações concretas de melhoria e dos prazos do backlog da AS, a escolha do Fitbod como aplicação a analisar na Atividade 14 e a leitura crítica de que o sistema é provavelmente híbrido (regras auditáveis + ajuste estatístico agregado), a conexão concreta entre o Fitbod e o próprio projeto (regra de equipamento como camada explícita, compromisso de manter a explicabilidade), e, na Atividade 15, a decisão de remover a idade do modelo final, de usar a regra de segurança como encaminhamento ao professor e não como troca automática, e a classificação do risco do projeto, são do estudante.
