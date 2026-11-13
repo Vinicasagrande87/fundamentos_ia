@@ -26,17 +26,17 @@ Atualizado na Atividade 11 (Revisão técnica da AP2), com base nas investigaç�
 | Item | Descrição | Status | Encontro |
 |---|---|---|---|
 | ~~Promover `class_weight='balanced'` a padrão~~ | Substituído: a Atividade 15 mostrou que o balanced não melhora o recall de D. O modelo da AS passa a ser a árvore sem `idade` + regra de segurança como encaminhamento ao professor (item novo da nota acima) | Substituído | 15 |
-| Testar profundidade maior e Random Forest | Treinar árvore com `max_depth=7` e um `RandomForestClassifier`, comparar `feature_importances_` com a árvore atual, verificar se o atalho por idade identificado na seção 15 persiste | A fazer | 13-14 |
+| Testar profundidade maior e Random Forest | Varredura de profundidade 4 a sem limite: **`max_depth=6`** resolve o ramo "iniciante de hipertrofia com ≤2 dias" (recall de D fora da regra 0,60 → 0,89) e passa a ser o modelo final. Random Forest não foi testada | Feito em parte (AS) | 16 |
 | Reportar validação cruzada como número de referência | Atualizar slides e relatórios para apresentar "~0,83 (validação cruzada, desvio 0,03)" como o número principal, não o 0,90 do split único isolado | Feito (Atividade 15) | 12 |
 | Feature de interação restrição × iniciante | Criar `restricao_e_iniciante` e testá-la junto com `class_weight='balanced'` (validação cruzada), reportando o erro por grupo do K-means da Atividade 12, não só a acurácia global | A fazer | 13-14 |
 | Regra de segurança sobre a saída do modelo | Avaliar uma regra fixa acima da árvore: aluno com restrição física e iniciante → Treino D (ou revisão do professor), medindo quanto o recall de Treino D sobe e quanto custa em falsos positivos | Feito (Atividade 15) | 13-14 |
 | Avaliar troca da base sintética por dados reais (ou redução do ruído proposital) | Discutir se o teto de ~8% de ruído de rótulo limita demais qualquer métrica, e se vale a pena buscar dados reais de alunos de academia | A fazer | 13-14 |
-| Notebook final executável de ponta a ponta | Com a configuração definitiva do modelo (resultado dos itens acima), executado do início ao fim sem erros, com todas as saídas e figuras visíveis | A fazer | 15 |
+| Notebook final executável de ponta a ponta | `AS_ViniciusCasagrande_ADS.ipynb`: regera a base, reproduz o tratamento, executado do início ao fim sem erros | Feito (AS) | 16 |
 | README completo | Com instruções de execução atualizadas, referenciando todos os artefatos finais do projeto | Feito (Atividade 15) | 15 |
-| Relatório final do projeto | Documento consolidado com todo o histórico do projeto, da proposta (AP1) ao modelo final, incluindo a comparação com a rede neural (Atividade 13) como justificativa para manter a árvore | A fazer | 16 |
-| Análise ética e crítica | Aprofundar o viés de acesso a equipamento já identificado no diagnóstico de qualidade (Atividade 5), o ponto cego em alunos com restrição física fora da hipertrofia (Atividade 12) e a limitação de usar base sintética em vez de dados reais | A fazer | 16 |
-| Evidências de execução | Notebook exportado com saídas visíveis, capturas de tela organizadas no repositório, comprovando a execução do pipeline completo | A fazer | 16 |
-| Registro final de limitações e melhorias futuras | Consolidar esta revisão técnica (Atividade 11) e os resultados dos itens acima num registro único para a AS | A fazer | 17 |
+| Relatório final do projeto | `entregas/AS_ViniciusCasagrande_ADS_Relatorio.md` / `.pdf` | Feito (AS) | 16 |
+| Análise ética e crítica | Auditoria por subgrupo com o modelo final (notebook §10), proxies (idade, saúde/LGPD, equipamento), risco e uso indevido (relatório §5) | Feito (AS) | 16 |
+| Evidências de execução | Notebook final com todas as saídas visíveis e figuras salvas (`matriz_confusao_final.png`, `recall_D_subgrupo_final.png`) | Feito (AS) | 16 |
+| Registro final de limitações e melhorias futuras | Relatório final §6 e notebook §11 | Feito (AS) | 16 |
 
 ## Perguntas de defesa pendentes (respondidas na Atividade 11, a confirmar na AS)
 

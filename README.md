@@ -1,10 +1,16 @@
 # Projeto: Recomendação de Treinos Personalizados em Academia
 
-**Em uma frase:** uma árvore de decisão que, a partir de 6 dados do perfil de um aluno de academia, recomenda uma de 4 categorias de treino. O projeto foi treinado e avaliado **apenas em uma base sintética** de 300 alunos.
+**Em uma frase:** uma árvore de decisão que, a partir de 5 dados do perfil de um aluno de academia, sugere uma de 4 categorias de treino ao professor, e encaminha os casos de risco para revisão humana. O projeto foi treinado e avaliado **apenas em uma base sintética** de 300 alunos.
 
 Projeto desenvolvido na disciplina **Fundamentos de Inteligência Artificial — ADS/ULBRA**, construído de forma incremental ao longo do semestre.
 
-> **Relatório crítico final (Atividade 15):** [`entregas/Atividade15_ViniciusCasagrande.md`](entregas/Atividade15_ViniciusCasagrande.md), com resultados, limitações, auditoria de viés, riscos, melhorias e o roteiro da AS. As evidências numéricas estão em [`atividade15_academia.ipynb`](atividade15_academia.ipynb).
+> **Entrega da AS (19/11/2026):**
+> - **Notebook final:** [`AS_ViniciusCasagrande_ADS.ipynb`](AS_ViniciusCasagrande_ADS.ipynb). Vai dos dados brutos à decisão do modelo, executado do início ao fim.
+> - **Relatório final:** [`entregas/AS_ViniciusCasagrande_ADS_Relatorio.md`](entregas/AS_ViniciusCasagrande_ADS_Relatorio.md) (também em `.pdf`).
+> - **Slides:** [`entregas/AS_ViniciusCasagrande_ADS_Slides.pdf`](entregas/AS_ViniciusCasagrande_ADS_Slides.pdf).
+> - **Registro de uso de IA:** [`entregas/AS_ViniciusCasagrande_ADS_UsoDeIA.md`](entregas/AS_ViniciusCasagrande_ADS_UsoDeIA.md).
+>
+> O relatório crítico da Atividade 15 continua em [`entregas/Atividade15_ViniciusCasagrande.md`](entregas/Atividade15_ViniciusCasagrande.md), como foi entregue.
 
 ## Visão geral (para quem nunca viu o projeto)
 
@@ -20,24 +26,29 @@ Projeto desenvolvido na disciplina **Fundamentos de Inteligência Artificial —
 **Dados.** O arquivo `dataset_academia.csv` tem 300 alunos **sintéticos**, gerados por `gerar_dataset.py` (seed 1053). Os rótulos vêm de uma regra escrita pelo autor, com 8% de ruído proposital. A base tratada está em `dataset_academia_tratado.csv`. Não há nenhum dado pessoal real. Licença: dataset de autoria própria, livre para uso acadêmico. O dicionário de variáveis está na [seção 3](#3-base-de-dados).
 
 **Como executar.**
-- **Google Colab (recomendado):** abra qualquer `atividadeN_academia.ipynb` no Colab e execute tudo (*Ambiente de execução → Executar tudo*). A primeira célula clona este repositório se os dados não estiverem presentes. O notebook final é o `atividade15_academia.ipynb`.
-- **Local:** `pip install -r requirements.txt` e depois `jupyter nbconvert --to notebook --execute atividade15_academia.ipynb` (ou abra no Jupyter). Para regerar a base: `python gerar_dataset.py 1053`.
+- **Google Colab (recomendado):** abra o `AS_ViniciusCasagrande_ADS.ipynb` no Colab e execute tudo (*Ambiente de execução → Executar tudo*). A primeira célula clona este repositório se os dados não estiverem presentes. Os notebooks `atividadeN_academia.ipynb` funcionam do mesmo jeito.
+- **Local:** `pip install -r requirements.txt` e depois `jupyter nbconvert --to notebook --execute AS_ViniciusCasagrande_ADS.ipynb` (ou abra no Jupyter).
+- **Base do zero:** `python gerar_dataset.py 1053` regera `dataset_academia.csv`. O notebook final também regera a base e o tratamento e confere que os dois são idênticos aos CSVs do repositório.
 
-**Resultados (validação cruzada k=5, 300 alunos; métrica principal: recall de Treino D).**
+**Resultados (validação cruzada 5 folds repetida 10 vezes, 300 alunos; métrica principal: recall de Treino D).**
 
-| Configuração | Acurácia | Recall de Treino D | Em linguagem simples |
-|---|---|---|---|
-| Baseline (sempre Treino D) | 0,31 | 1,00 | Manda todo mundo para o treino adaptado e erra 7 de cada 10 alunos |
-| Árvore balanced, com idade (modelo até a Atividade 15) | **0,84** ±0,03 | **0,76** | Acerta 84 de cada 100 alunos. De cada 4 que precisam do treino adaptado, 1 não o recebe |
-| Sem idade + regra de segurança (proposta para a AS) | 0,88 | 0,89 | Os alunos que precisavam do treino adaptado e não o receberam caem de 22 para 10, em 92 (número otimista, ver limitações) |
+| Configuração | Acurácia | Recall de Treino D | Recall de D fora da regra de segurança | Em linguagem simples |
+|---|---|---|---|---|
+| Baseline (sempre Treino D) | 0,31 | 1,00 | 1,00 | Manda todo mundo para o treino adaptado e erra 7 de cada 10 alunos |
+| Árvore d=5, com idade (AP2) | 0,83 | 0,77 | 0,59 | — |
+| Árvore d=5 balanced, sem idade (proposta da Atividade 15) | 0,84 | 0,78 | 0,60 | — |
+| Rede neural MLP, sem idade | 0,86 | 0,86 | 0,82 | Descartada: perde da árvore final fora da regra e não mostra as regras |
+| **Árvore d=6, sem idade (modelo final da AS)** | **0,86** | **0,84** | **0,89** | De cada 100 alunos que precisam do treino adaptado, 84 o recebem |
 
-O 0,90 do split único apresentado na AP2 foi um sorteio favorável: o mesmo modelo varia de 0,70 a 0,92 conforme a divisão treino/teste.
+**Regra de segurança.** Alunos com restrição física e iniciantes, ou sem equipamento, vão para **revisão do professor** (72 de 300, ou 24%). Essa regra copia um trecho da regra que gerou os rótulos, então lá dentro ela acerta por construção. Por isso o desempenho do modelo é reportado **fora da cobertura** da regra, onde ele decide sozinho.
+
+O 0,90 do split único apresentado na AP2 foi um sorteio favorável: o mesmo modelo varia de 0,80 a 0,95 conforme a divisão treino/teste.
 
 **Limitações conhecidas.**
 1. **A base é sintética.** O modelo recupera a regra que o autor escreveu e nunca foi testado com alunos reais. O máximo possível é ~0,92, por causa do ruído.
-2. **Os resultados são instáveis:** ±3 pontos entre folds, e até 1 aluno de diferença entre versões do scikit-learn.
-3. **O modelo erra mais onde a pessoa é mais vulnerável:** iniciantes com restrição física (sobretudo lombar) e iniciantes de hipertrofia com até 2 dias, porque há poucos exemplos dessas combinações.
-4. **A idade funciona como atalho espúrio:** os alunos de 16-24 e de 35+ anos têm recall de D ~0,67, contra 0,88 dos de 25-34. Por isso a idade sai do modelo final.
+2. **O projeto responde a uma pergunta mais fácil que a de um app real.** Decide só o treino inicial, a partir de um perfil estático, e não sabe se a recomendação funcionou.
+3. **Os resultados são instáveis.** Variam vários pontos entre sorteios, e com outra versão do scikit-learn o split único pode mudar em 1 aluno.
+4. **O pior grupo é o de restrição lombar** (recall de D 0,62). Alunos com restrição que não são iniciantes não caem na regra de segurança.
 5. **Faltam variáveis essenciais:** grau da restrição, liberação médica, histórico de lesões. **Não use o sistema sem revisão de um professor nem para pessoas fora do perfil da base:** acima de 51 anos, gestantes, cardiopatas.
 
 A declaração de uso de IA está no [final deste README](#declaração-de-uso-de-inteligência-artificial).
@@ -212,6 +223,9 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 
 ```
 ├── README.md
+├── AS_ViniciusCasagrande_ADS.ipynb         # NOTEBOOK FINAL DA AS: dados brutos → tratamento → modelo final → avaliação → explicabilidade → viés
+├── matriz_confusao_final.png               # matriz de confusão do modelo final (AS)
+├── recall_D_subgrupo_final.png             # recall de Treino D por subgrupo, Atividade 15 x modelo final (AS)
 ├── gerar_dataset.py                        # script reprodutível de geração da base
 ├── dataset_academia.csv                    # base original simulada — 300 alunos, 8 colunas (intacta)
 ├── dataset_academia_tratado.csv            # base tratada (Atividade 8), salva e verificada
@@ -229,7 +243,7 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 ├── comparacao_modelos_atividade13.png      # comparação lado a lado no mesmo teste (Atividade 13)
 ├── atividade15_academia.ipynb              # evidências do relatório crítico: comparações pareadas, regra de segurança, auditoria de viés (Atividade 15, executado)
 ├── recall_D_subgrupo_atividade15.png       # recall de Treino D por subgrupo (Atividade 15)
-├── requirements.txt                        # versões usadas na execução local da Atividade 15
+├── requirements.txt                        # versões usadas na execução local (Atividade 15 e AS)
 ├── relatorio_qualidade_dados.pdf           # relatório curto de qualidade dos dados + tabela de diagnóstico
 ├── grafico_analise_inicial.png             # figura da análise exploratória
 ├── grafico_desbalanceamento.png            # figura do desbalanceamento das classes
@@ -253,6 +267,9 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
     ├── Atividade14_ViniciusCasagrande.docx / .pdf  # análise técnica do Fitbod (entrega única)
     ├── Atividade15_ViniciusCasagrande.md / .docx / .pdf  # relatório crítico final + roteiro da AS (entrega única)
     ├── Backlog_AS_ViniciusCasagrande.md     # backlog atualizado rumo ao Encontro 17 (AS)
+    ├── AS_ViniciusCasagrande_ADS_Relatorio.md / .docx / .pdf  # relatório final do projeto (AS)
+    ├── AS_ViniciusCasagrande_ADS_Slides.pptx / .pdf           # slides da AS (12 slides, roteiro nas notas)
+    ├── AS_ViniciusCasagrande_ADS_UsoDeIA.md                   # registro de uso de IA de todo o projeto
     ├── AP1_ViniciusCasagrande.pdf           # slides da AP1 (nome exigido pelo enunciado)
     ├── AP1_ViniciusCasagrande.pptx          # slides da AP1 (fonte editável, versão mais recente)
     ├── slides_ap1.pptx                      # slides da AP1 — versão anterior, fonte do PDF acima
@@ -285,8 +302,8 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Medir a regra de segurança (restrição + iniciante → Treino D): no modelo com idade, altera 8 de 300 previsões, 7 certas; no modelo sem idade (proposta da AS), altera 9, todas certas, e o recall de D vai de 0,79 para 0,89. Não muda o recall de A, B e C (Atividade 15)
 - [x] Rede neural (MLP) comparada com a árvore — decisão: não usar rede neural no projeto final (Atividade 13)
 - [x] Validar `class_weight='balanced'` com validação cruzada — 0,84 contra 0,8267 na acurácia (Atividade 13). Revisto na Atividade 15: no recall de D, a melhora não se confirma
-- [ ] Promover o modelo da AS (sem `idade` + regra de segurança como encaminhamento ao professor) a configuração padrão e reexecutar a avaliação completa (substitui o item "promover o balanced", que a Atividade 15 não confirmou no recall de D)
-- [ ] Testar profundidade maior e Random Forest, comparando `feature_importances_` com a árvore atual
+- [x] Promover o modelo da AS (sem `idade` + regra de segurança como encaminhamento ao professor) a configuração padrão e reexecutar a avaliação completa (AS, `AS_ViniciusCasagrande_ADS.ipynb`)
+- [x] Testar profundidade maior: a profundidade 6 resolve o ramo "iniciante de hipertrofia com ≤2 dias" e leva o recall de D fora da regra de 0,60 para 0,89 (AS). Random Forest não foi testada
 - [ ] Discussão do que o resultado (0,90 no split único / ~0,83 na validação cruzada) significa para alunos reais, não apenas para a base sintética
 - [x] Análise técnica de uma aplicação real de IA do domínio (Fitbod) e conexão com o projeto (Atividade 14)
 - [x] Medir se o ganho de recall de D da rede neural é real: +0,05, a rede ganha em 30 de 50 folds pareados e perde em 13. É real, mas pequeno e ruidoso, e a decisão de manter a árvore continua (Atividade 15)
@@ -294,8 +311,8 @@ O tratamento da base está documentado em `atividade8_academia.ipynb`, executado
 - [x] Medir se 0,84 (balanced) contra 0,8267 é uma diferença real: na acurácia, ganha em 22, empata em 22 e perde em 6 de 50 folds. No recall de D, não melhora (Atividade 15)
 - [x] Auditoria de viés por subgrupo e verificação de proxy: a idade é um atalho espúrio, e removê-la melhora o modelo e reduz a diferença entre faixas etárias (Atividade 15)
 - [x] README reestruturado com a estrutura mínima e relatório crítico final (Atividade 15)
-- [ ] Remover a idade e aplicar a regra de segurança no modelo final da AS, reexecutando a avaliação completa
-- [ ] Slides finais e evidências de execução para a AS (backlog completo em `entregas/Backlog_AS_ViniciusCasagrande.md`)
+- [x] Remover a idade e aplicar a regra de segurança no modelo final da AS, reexecutando a avaliação completa (AS)
+- [x] Slides finais, relatório final, registro de uso de IA e notebook final executado (AS)
 
 ---
 
@@ -449,7 +466,26 @@ O notebook responde com números as perguntas de defesa deixadas nos feedbacks d
 
 ---
 
+## 16. AS — Integração final do projeto
+
+O notebook final [`AS_ViniciusCasagrande_ADS.ipynb`](AS_ViniciusCasagrande_ADS.ipynb) junta o projeto inteiro numa única execução: regera a base, reproduz o tratamento, treina e compara todos os modelos nos mesmos folds, e mede a regra de segurança, a explicabilidade e a auditoria de viés. Ao executar a proposta da Atividade 15, apareceram achados que mudaram o modelo final:
+
+| Achado | Evidência (notebook) | Decisão |
+|---|---|---|
+| Sem a idade, a rede neural superava a árvore d=5 **fora** da regra de segurança (0,82 contra 0,60) | §5, primeira tabela | Investigar por que a árvore errava ali |
+| Lendo `export_text`: com 5 níveis, a árvore não chega à pergunta "é iniciante?" no ramo de hipertrofia com ≤2 dias | §5, varredura de profundidades | **`max_depth=6`**: recall de D fora da regra 0,89, acima da rede (ganha nas 10 repetições) |
+| A regra de segurança copia a regra de geração: dentro da cobertura ela acerta por construção (feedback da Atividade 14) | §8 | Reportar o recall de D **fora** da cobertura (0,83) como métrica do modelo, e a cobertura (24%) como custo |
+| Duas folhas da árvore d=6 mandam iniciante com restrição e ≤2 dias para Treino A | §9 | Os dois perfis estão dentro da regra de segurança, o que justifica mantê-la |
+| A diferença de recall de D entre faixas etárias praticamente desapareceu (0,82 / 0,83 / 0,80); o pior grupo passou a ser restrição lombar (0,62) | §10 | Próximo passo: estender a regra a "lombar, qualquer nível" e medir o custo |
+
+**Configuração final:** árvore de decisão `max_depth=6`, sem idade e sem balanceamento, mais regra de segurança como encaminhamento ao professor. Relatório: [`entregas/AS_ViniciusCasagrande_ADS_Relatorio.md`](entregas/AS_ViniciusCasagrande_ADS_Relatorio.md). Slides: [`entregas/AS_ViniciusCasagrande_ADS_Slides.pdf`](entregas/AS_ViniciusCasagrande_ADS_Slides.pdf), com o roteiro de fala nas notas de cada slide.
+
+---
+
 ## Declaração de uso de Inteligência Artificial
+
+**Registro completo, por atividade:** [`entregas/AS_ViniciusCasagrande_ADS_UsoDeIA.md`](entregas/AS_ViniciusCasagrande_ADS_UsoDeIA.md).
+
 
 **Uso de IA nesta entrega:** Sim
 **Ferramentas:** Claude (Anthropic) e ChatGPT
